@@ -5,19 +5,75 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>test-blender-models</title>
+    <link rel="stylesheet" href="./libs/animation.css" />
     <link rel="stylesheet" href="index.css" />
   </head>
   <body>
-    <!-- <div class="leftBox">
-      <select>
-        <option value="volvo">Volvo</option>
-        <option value="saab">Saab</option>
-        <option value="opel">Opel</option>
-        <option value="audi">Audi</option>
-      </select>
+    <div class="buttonBox">
+      <button class="leftBtn btn"><</button>
+      <button class="rightBtn btn">></button>
+    </div>
 
-      <div class="infoBox">test</div>
-    </div> -->
+    <!-- loading -->
+    <div class="loadingBox">loading</div>
+
+    <!-- home -->
+    <div class="homeBox">
+      <!-- 这里占一半即可。。 -->
+      <div class="homeInfoBox">
+        <div class="homeInfo">Peral 's Buck</div>
+        <div class="selectBox">
+          <select id="select">
+            <option value="chinese">中文</option>
+            <option value="english">English</option>
+          </select>
+        </div>
+        <div class="enterBox">
+          <!-- 这里也要考虑中英文 -->
+          <button class="enterBtn">进入页面</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- main -->
+    <div class="mainBox">
+      <div class="topBox">
+        <div class="topL">导览/探索</div>
+        <div class="topM">赛珍珠文化公园</div>
+        <div class="topR">
+          <img id="infoBtn" class="icon" src="./icons/info.png" alt="info" />
+          <img id="fullBtn" class="icon" src="./icons/full.png" alt="full" />
+          <img
+            id="languageBtn"
+            class="icon"
+            src="./icons/language.png"
+            alt="language"
+          />
+        </div>
+      </div>
+      <div class="bottomBox">
+        <ul class="bottomList">
+          <li class="bottomItem">公园综述</li>
+          <li class="bottomItem">广场景观</li>
+          <li class="bottomItem">赛珍珠故居</li>
+          <li class="bottomItem">赛珍珠纪念馆</li>
+          <li class="bottomItem">大地翰墨画室</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- showinfo -->
+    <!-- showinfo - 显示在页面上 -->
+    <div class="preInfoBox">
+      <div class="title">00</div>
+      <div class="infoBody">33</div>
+    </div>
+
+    <!-- showinfo - 全屏显示！ -->
+    <div class="detailInfoBox">
+      <div class="title">11</div>
+      <div class="infoBody">22</div>
+    </div>
 
     <script type="module" src="./index.js"></script>
   </body>

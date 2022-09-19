@@ -1,5 +1,126 @@
+:root {
+  --transTime: 0.5s;
+}
 
-body{
-    margin: 0;
-    padding: 0;
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Georgia, serif, "Arial", "Microsoft YaHei", "黑体", "宋体",
+    sans-serif;
+
+  overflow: hidden;
+}
+
+.btn {
+  border: 1px solid #000;
+  background: transparent;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.buttonBox .leftBtn {
+  position: fixed;
+  z-index: 10;
+  top: 50%;
+  left: 20px;
+  transform: translate(0, -50%);
+}
+
+.buttonBox .rightBtn {
+  position: fixed;
+  z-index: 10;
+  top: 50%;
+  right: 20px;
+  transform: translate(0, -50%);
+}
+
+/* ui */
+/* ---loading------ */
+.loadingBox {
+  position: fixed;
+  z-index: 11;
+  background-color: #000;
+  width: 100vw;
+  height: 100vh;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+}
+
+/* ---home------ */
+.homeBox {
+  position: fixed;
+  right: 0;
+  z-index: 10;
+  background-color: rgba(0, 0, 0, 0.9);
+  width: 50vw;
+  height: 100vh;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+
+  color: white;
+}
+
+.homeBox .enterBox .enterBtn {
+  cursor: pointer;
+}
+
+/* ---main------ */
+
+.mainBox .topBox {
+  position: fixed;
+  z-index: 1;
+  top: -10vh;
+  transition: all var(--transTime);
+
+  width: 100vw;
+  height: 10vh;
+  background-color: #000;
+  color: #fff;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+.topBox .topR .icon {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  cursor: pointer;
+}
+
+.topBox .topR .icon:last-child {
+  width: 32px;
+  height: 32px;
+}
+
+.mainBox .bottomBox {
+  position: fixed;
+  bottom: -10vh;
+  transition: all var(--transTime);
+
+  z-index: 1;
+  width: 100vw;
+  height: 10vh;
+  background-color: #000;
+  color: #fff;
+  box-sizing: border-box;
+}
+
+.bottomBox .bottomList {
+  box-sizing: border-box;
+  height: 100%;
+  display: flex;
+  list-style: none;
+  justify-content: space-around;
+  align-items: center;
+  margin: 0;
 }

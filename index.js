@@ -5,33 +5,101 @@ import { CSS2DRenderer, CSS2DObject } from "./libs/CSS2DRenderer.js";
 
 import { GLTFLoader } from "./libs/GLTFLoader.js";
 
-import { GUI } from "./libs/lil-gui.module.min.js";
+// import { GUI } from "./libs/lil-gui.module.min.js";
 
-let gui;
+import Stats from "./libs/stats.module.js";
 
-let camera, scene, renderer, labelRenderer;
+// let gui;
+
+let camera, scene, renderer, labelRenderer, stats, controls;
 
 let tube,
   curve,
-  curveVector3 = [];
+  curveVector3 = [],
+  haltPoints = [],
+  haltIndex = 0;
 
 let _time = 0;
 
-const layers = {
-  "Toggle Name": function () {
-    camera.layers.toggle(0);
-  },
-  "Toggle Mass": function () {
-    camera.layers.toggle(1);
-  },
-  "Enable All": function () {
-    camera.layers.enableAll();
-  },
+// page
 
-  "Disable All": function () {
-    camera.layers.disableAll();
-  },
-};
+let loadingBox = document.querySelector(".loadingBox");
+let homeBox = document.querySelector(".homeBox");
+
+let topBox = document.querySelector(".topBox");
+let bottomBox = document.querySelector(".bottomBox");
+
+setTimeout(() => {
+  loadingBox.classList.add("animate__animated", "animate__fadeOut");
+  loadingBox.style.zIndex = 0;
+}, 3000);
+
+// ---------------
+// btn
+let leftBtn, rightBtn, enterBtn;
+let flag = false;
+let moveDirection;
+
+let infoBnt, fullBtn, languageBtn;
+
+leftBtn = document.querySelector(".leftBtn");
+rightBtn = document.querySelector(".rightBtn");
+enterBtn = document.querySelector(".enterBtn");
+
+infoBnt = document.querySelector("#infoBnt");
+fullBtn = document.querySelector("#fullBtn");
+languageBtn = document.querySelector("#languageBtn");
+
+leftBtn.addEventListener("click", () => {
+  flag = true;
+  haltIndex--;
+  haltIndex %= haltPoints.length;
+  moveDirection = "Back";
+});
+
+rightBtn.addEventListener("click", () => {
+  flag = true;
+  haltIndex++;
+  haltIndex %= haltPoints.length;
+  moveDirection = "Front";
+});
+
+enterBtn.addEventListener("click", () => {
+  homeBox.classList.remove("animate__animated", "animate__fadeInRight");
+  homeBox.classList.add("animate__animated", "animate__fadeOutRight");
+  topBox.style.top = "0vh";
+  bottomBox.style.bottom = "0vh";
+
+  homeBox.style.zIndex = 0;
+});
+
+languageBtn.addEventListener("click", () => {
+  homeBox.classList.remove("animate__animated", "animate__fadeOutRight");
+  homeBox.classList.add("animate__animated", "animate__fadeInRight");
+
+  topBox.style.top = "-10vh";
+  bottomBox.style.bottom = "-10vh";
+
+  homeBox.style.zIndex = 1;
+});
+
+// ---------------
+
+// const layers = {
+//   "Toggle Name": function () {
+//     camera.layers.toggle(0);
+//   },
+//   "Toggle Mass": function () {
+//     camera.layers.toggle(1);
+//   },
+//   "Enable All": function () {
+//     camera.layers.enableAll();
+//   },
+
+//   "Disable All": function () {
+//     camera.layers.disableAll();
+//   },
+// };
 
 const clock = new THREE.Clock();
 const textureLoader = new THREE.TextureLoader();
@@ -134,11 +202,11 @@ function init() {
 
     gltf.scene.traverse((item) => {
       if (item.isMesh && item.name.indexOf("Cube") !== -1) {
-        item.material = new THREE.MeshBasicMaterial({
-          color: "green",
-        });
-        item.scale.set(0.1, 0.1, 0.1);
-        // item.visible = false;
+        // item.material = new THREE.MeshBasicMaterial({
+        //   color: "green",
+        // });
+        // item.scale.set(0.1, 0.1, 0.1);
+        item.visible = false;
         const tempText = `
           ${item.name}, 
           x=${item.position.x.toFixed(2)}, 
@@ -148,6 +216,10 @@ function init() {
         createCSS2D(item, tempText, item.position);
 
         curveVector3.push(item.position);
+
+        if (item.name.endsWith("h")) {
+          haltPoints.push(item.position);
+        }
       } else if (item.name.indexOf("Text") !== -1) {
         item.material = new THREE.MeshBasicMaterial({
           color: "blue",
@@ -158,6 +230,8 @@ function init() {
         });
       }
     });
+
+    console.log(haltPoints);
 
     curve = new THREE.CatmullRomCurve3([...curveVector3]);
 
@@ -178,43 +252,7 @@ function init() {
     animate();
   });
 
-  // const earthDiv = document.createElement("div");
-  // earthDiv.className = "label";
-  // earthDiv.textContent = "Earth";
-  // earthDiv.style.marginTop = "-1em";
-  // const earthLabel = new CSS2DObject(earthDiv);
-  // earthLabel.position.set(0, EARTH_RADIUS, 0);
-  // earth.add(earthLabel);
-  // earthLabel.layers.set(0);
-
-  const earthMassDiv = document.createElement("div");
-  earthMassDiv.className = "label";
-  earthMassDiv.textContent = "5.97237e24 kg";
-  earthMassDiv.style.marginTop = "-1em";
-  const earthMassLabel = new CSS2DObject(earthMassDiv);
-  earthMassLabel.position.set(0, -2 * EARTH_RADIUS, 0);
-  earth.add(earthMassLabel);
-  earthMassLabel.layers.set(1);
-
-  const moonDiv = document.createElement("div");
-  moonDiv.className = "label";
-  moonDiv.textContent = "Moon";
-  moonDiv.style.marginTop = "-1em";
-  const moonLabel = new CSS2DObject(moonDiv);
-  moonLabel.position.set(0, MOON_RADIUS, 0);
-  moon.add(moonLabel);
-  moonLabel.layers.set(0);
-
-  const moonMassDiv = document.createElement("div");
-  moonMassDiv.className = "label";
-  moonMassDiv.textContent = `7.342e22 kg ${moon.position.x} ${moon.position.y} ${moon.position.z}`;
-  moonMassDiv.style.marginTop = "-1em";
-  const moonMassLabel = new CSS2DObject(moonMassDiv);
-  moonMassLabel.position.set(0, -2 * MOON_RADIUS, 0);
-  moon.add(moonMassLabel);
-  moonMassLabel.layers.set(1);
-
-  //
+  // render.
 
   renderer = new THREE.WebGLRenderer();
   renderer.setPixelRatio(window.devicePixelRatio);
@@ -227,15 +265,20 @@ function init() {
   labelRenderer.domElement.style.top = "0px";
   document.body.appendChild(labelRenderer.domElement);
 
-  const controls = new OrbitControls(camera, labelRenderer.domElement);
+  stats = new Stats();
+  document.body.appendChild(stats.dom);
+
+  controls = new OrbitControls(camera, labelRenderer.domElement);
   controls.minDistance = 5;
   controls.maxDistance = 200;
+  controls.enableRotate = true; // 开局自动旋转
 
   //
 
   window.addEventListener("resize", onWindowResize);
 
-  initGui();
+  // 取消gui
+  // initGui();
 }
 
 function updateCamera() {
@@ -248,9 +291,12 @@ function updateCamera() {
   const pos = curve.getPointAt(t);
   const pos2 = curve.getPointAt(t2);
 
-  const _temp = new THREE.Vector3(10, 0, 10).sub(pos);
+  const _temp = haltPoints[haltIndex].clone().sub(pos.clone());
 
-  // if (_temp.x < 0.5 && _temp.y < 0.5 && _temp.z < 0.5) alert("1");
+  if (_temp.x < 0.5 && _temp.y < 0.5 && _temp.z < 0.5) {
+    // alert("1");
+    flag = false;
+  }
 
   camera.position.copy(pos);
   camera.lookAt(pos2);
@@ -266,13 +312,25 @@ function onWindowResize() {
   labelRenderer.setSize(window.innerWidth, window.innerHeight);
 }
 
+function moveCamera(moveDirection) {
+  // console.log(_time);
+
+  updateCamera();
+  _time += moveDirection === "Front" ? 0.01 : -0.01;
+}
+
 function animate() {
   requestAnimationFrame(animate);
 
   // const elapsed = clock.getElapsedTime();
 
-  updateCamera();
-  _time += 0.01;
+  if (flag) {
+    moveCamera(moveDirection);
+  }
+
+  stats.update();
+
+  // controls.update();
 
   moon.position.set(Math.sin(_time) * 5, 0, Math.cos(_time) * 5);
 
@@ -282,11 +340,11 @@ function animate() {
 
 //
 
-function initGui() {
-  gui = new GUI();
+// function initGui() {
+//   gui = new GUI();
 
-  gui.add(layers, "Toggle Name");
-  gui.add(layers, "Toggle Mass");
-  gui.add(layers, "Enable All");
-  gui.add(layers, "Disable All");
-}
+//   gui.add(layers, "Toggle Name");
+//   gui.add(layers, "Toggle Mass");
+//   gui.add(layers, "Enable All");
+//   gui.add(layers, "Disable All");
+// }
