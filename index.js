@@ -29,6 +29,8 @@ let homeBox = document.querySelector(".homeBox");
 let topBox = document.querySelector(".topBox");
 let bottomBox = document.querySelector(".bottomBox");
 
+let optionInfoBox = document.querySelector(".optionInfoBox");
+
 setTimeout(() => {
   loadingBox.classList.add("animate__animated", "animate__fadeOut");
   loadingBox.style.zIndex = 0;
@@ -40,15 +42,32 @@ let leftBtn, rightBtn, enterBtn;
 let flag = false;
 let moveDirection;
 
-let infoBnt, fullBtn, languageBtn;
+let listBtn;
 
-leftBtn = document.querySelector(".leftBtn");
-rightBtn = document.querySelector(".rightBtn");
-enterBtn = document.querySelector(".enterBtn");
+let bottomListBtn, bottomItemList;
 
-infoBnt = document.querySelector("#infoBnt");
-fullBtn = document.querySelector("#fullBtn");
-languageBtn = document.querySelector("#languageBtn");
+leftBtn = document.querySelector("#leftBtn");
+rightBtn = document.querySelector("#rightBtn");
+enterBtn = document.querySelector("#enterBtn");
+
+listBtn = document.querySelector("#listBtn");
+
+// 事件委托
+
+bottomListBtn = document.querySelector("#bottomList");
+bottomItemList = document.querySelectorAll(".bottomItem");
+bottomListBtn.addEventListener("click", (e) => {
+  // 通过data属性方法是哪一个！！不用管中英文！
+  // console.log(e.target.dataset.index);
+
+  // 排他
+  bottomItemList.forEach((item) => {
+    item.classList.remove("active");
+  });
+
+  // 添加active
+  e.target.classList.add("active");
+});
 
 leftBtn.addEventListener("click", () => {
   flag = true;
@@ -67,18 +86,23 @@ rightBtn.addEventListener("click", () => {
 enterBtn.addEventListener("click", () => {
   homeBox.classList.remove("animate__animated", "animate__fadeInRight");
   homeBox.classList.add("animate__animated", "animate__fadeOutRight");
-  topBox.style.top = "0vh";
-  bottomBox.style.bottom = "0vh";
+  topBox.style.top = "0";
+  bottomBox.style.bottom = "0";
+  leftBtn.style.left = "20px";
+  rightBtn.style.right = "20px";
 
   homeBox.style.zIndex = 0;
 });
 
-languageBtn.addEventListener("click", () => {
+listBtn.addEventListener("click", () => {
   homeBox.classList.remove("animate__animated", "animate__fadeOutRight");
   homeBox.classList.add("animate__animated", "animate__fadeInRight");
 
   topBox.style.top = "-10vh";
   bottomBox.style.bottom = "-10vh";
+
+  leftBtn.style.left = "-52px";
+  rightBtn.style.right = "-52px";
 
   homeBox.style.zIndex = 1;
 });

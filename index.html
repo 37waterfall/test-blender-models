@@ -7,11 +7,16 @@
     <title>test-blender-models</title>
     <link rel="stylesheet" href="./libs/animation.css" />
     <link rel="stylesheet" href="index.css" />
+    <link rel="shortcut icon" href="./icons/favicon.ico" />
   </head>
   <body>
     <div class="buttonBox">
-      <button class="leftBtn btn"><</button>
-      <button class="rightBtn btn">></button>
+      <button class="leftBtn btn" id="leftBtn">
+        <img src="./icons/left.png" alt="left" />
+      </button>
+      <button class="rightBtn btn" id="rightBtn">
+        <img src="./icons/right.png" alt="right" />
+      </button>
     </div>
 
     <!-- loading -->
@@ -30,7 +35,7 @@
         </div>
         <div class="enterBox">
           <!-- 这里也要考虑中英文 -->
-          <button class="enterBtn">进入页面</button>
+          <button class="enterBtn" id="enterBtn">进入页面</button>
         </div>
       </div>
     </div>
@@ -41,23 +46,23 @@
         <div class="topL">导览/探索</div>
         <div class="topM">赛珍珠文化公园</div>
         <div class="topR">
-          <img id="infoBtn" class="icon" src="./icons/info.png" alt="info" />
-          <img id="fullBtn" class="icon" src="./icons/full.png" alt="full" />
+          <!-- <img id="infoBtn" class="icon" src="./icons/info.png" alt="info" /> -->
+          <!-- <img id="fullBtn" class="icon" src="./icons/full.png" alt="full" /> -->
           <img
-            id="languageBtn"
+            id="listBtn"
             class="icon"
-            src="./icons/language.png"
+            src="./icons/list.png"
             alt="language"
           />
         </div>
       </div>
       <div class="bottomBox">
-        <ul class="bottomList">
-          <li class="bottomItem">公园综述</li>
-          <li class="bottomItem">广场景观</li>
-          <li class="bottomItem">赛珍珠故居</li>
-          <li class="bottomItem">赛珍珠纪念馆</li>
-          <li class="bottomItem">大地翰墨画室</li>
+        <ul class="bottomList" id="bottomList">
+          <li class="bottomItem active" data-index="0">公园综述</li>
+          <li class="bottomItem" data-index="1">广场景观</li>
+          <li class="bottomItem" data-index="2">赛珍珠故居</li>
+          <li class="bottomItem" data-index="3">赛珍珠纪念馆</li>
+          <li class="bottomItem" data-index="4">大地翰墨画室</li>
         </ul>
       </div>
     </div>
@@ -65,15 +70,42 @@
     <!-- showinfo -->
     <!-- showinfo - 显示在页面上 -->
     <div class="preInfoBox">
-      <div class="title">00</div>
-      <div class="infoBody">33</div>
+      <div class="title">Header</div>
+      <div class="infoBody">
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia,
+        corrupti!
+      </div>
     </div>
 
     <!-- showinfo - 全屏显示！ -->
     <div class="detailInfoBox">
-      <div class="title">11</div>
-      <div class="infoBody">22</div>
+      <div class="title">Header</div>
+      <div class="infoBody">
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consequatur
+        facere accusantium, maiores quaerat mollitia animi eos at maxime commodi
+        itaque corrupti doloremque voluptatem consequuntur dicta architecto
+        rerum autem modi aliquid. Voluptatum, tenetur? Eum totam quae quasi
+        adipisci est, harum, quas rerum provident nam nobis blanditiis
+        excepturi. Eum, eveniet eligendi soluta alias non vero a, pariatur
+        voluptates deleniti corrupti suscipit voluptatibus. Iusto odio, modi
+        amet facere cupiditate at sunt, delectus a aliquid nostrum iste ipsam
+        veritatis quaerat facilis sapiente! Officia quia sunt ut totam deleniti
+        nulla incidunt sapiente vero velit dolores? Vel numquam, architecto et
+        cum minima illo accusamus dolorum consectetur ducimus exercitationem hic
+        quidem autem molestias fugiat quam quas, deleniti quo voluptas officia
+        pariatur nihil consequuntur? Officia cumque id molestias. Tenetur, alias
+        optio natus blanditiis quis, velit dolor exercitationem eaque deleniti
+        suscipit omnis reprehenderit debitis deserunt aut. Beatae necessitatibus
+        exercitationem maxime sequi, adipisci aliquid impedit quaerat, nostrum
+        aspernatur, sit dicta? Nostrum corporis esse, consequuntur laboriosam
+        expedita laborum? Velit minus iusto itaque hic ipsum, qui aut, eum
+        provident dolorum illum nostrum optio sapiente repellat aperiam maxime
+        voluptas iure quos reiciendis perspiciatis!
+      </div>
     </div>
+
+    <!-- 操作信息提示框 -->
+    <div class="optionInfoBox">12313</div>
 
     <script type="module" src="./index.js"></script>
   </body>

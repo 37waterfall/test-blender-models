@@ -1,5 +1,5 @@
 :root {
-  --transTime: 0.5s;
+  --transTime: 0.4s;
 }
 
 body {
@@ -12,25 +12,41 @@ body {
 }
 
 .btn {
-  border: 1px solid #000;
+  border: 1px solid rgba(255, 255, 255, 0.4);
   background: transparent;
   cursor: pointer;
   font-size: 20px;
+
+  width: 50px;
+  height: 50px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  transition: all var(--transTime);
+  transition-delay: 0.3s;
+}
+.btn img {
+  object-fit: contain;
+}
+.btn:hover {
+  background-color: rgba(255, 255, 255, 0.4);
 }
 
 .buttonBox .leftBtn {
   position: fixed;
-  z-index: 10;
+  z-index: 1;
   top: 50%;
-  left: 20px;
+  left: -52px;
   transform: translate(0, -50%);
 }
 
 .buttonBox .rightBtn {
   position: fixed;
-  z-index: 10;
+  z-index: 1;
   top: 50%;
-  right: 20px;
+  right: -52px;
   transform: translate(0, -50%);
 }
 
@@ -97,11 +113,6 @@ body {
   cursor: pointer;
 }
 
-.topBox .topR .icon:last-child {
-  width: 32px;
-  height: 32px;
-}
-
 .mainBox .bottomBox {
   position: fixed;
   bottom: -10vh;
@@ -111,7 +122,6 @@ body {
   width: 100vw;
   height: 10vh;
   background-color: #000;
-  color: #fff;
   box-sizing: border-box;
 }
 
@@ -123,4 +133,32 @@ body {
   justify-content: space-around;
   align-items: center;
   margin: 0;
+  padding: 0;
+}
+
+.bottomList .bottomItem {
+  width: 100%;
+  height: 100%;
+
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.bottomList .active {
+  color: #fff;
+}
+
+.bottomList .bottomItem::after {
+  content: "";
+  height: 40%;
+  border-right: 1px solid #fff;
+  position: absolute;
+  right: 0;
+}
+.bottomList .bottomItem:last-child::after {
+  border-right: 0;
 }
