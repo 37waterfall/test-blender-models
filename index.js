@@ -9,9 +9,18 @@ import { GLTFLoader } from "./libs/GLTFLoader.js";
 
 import Stats from "./libs/stats.module.js";
 
+import { RGBELoader } from "./libs/RGBELoader.js";
+
 // let gui;
 
-let camera, scene, renderer, labelRenderer, stats, controls;
+let camera,
+  scene,
+  renderer,
+  labelRenderer,
+  stats,
+  controls,
+  manager,
+  textureLoader;
 
 let tube,
   curve,
@@ -31,10 +40,11 @@ let bottomBox = document.querySelector(".bottomBox");
 
 let optionInfoBox = document.querySelector(".optionInfoBox");
 
-setTimeout(() => {
-  loadingBox.classList.add("animate__animated", "animate__fadeOut");
-  loadingBox.style.zIndex = 0;
-}, 3000);
+// loading 接入实际数据显示！
+// setTimeout(() => {
+//   loadingBox.classList.add("animate__animated", "animate__fadeOut");
+//   loadingBox.style.zIndex = 0;
+// }, 3000);
 
 // ---------------
 // btn
@@ -104,7 +114,7 @@ listBtn.addEventListener("click", () => {
   leftBtn.style.left = "-52px";
   rightBtn.style.right = "-52px";
 
-  homeBox.style.zIndex = 1;
+  homeBox.style.zIndex = 10;
 });
 
 // ---------------
@@ -127,16 +137,10 @@ listBtn.addEventListener("click", () => {
 // };
 
 const clock = new THREE.Clock();
-const textureLoader = new THREE.TextureLoader();
-
-let moon;
 
 init();
 
 function init() {
-  const EARTH_RADIUS = 1;
-  const MOON_RADIUS = 0.27;
-
   camera = new THREE.PerspectiveCamera(
     45,
     window.innerWidth / window.innerHeight,
@@ -148,7 +152,8 @@ function init() {
   camera.layers.toggle(1);
 
   scene = new THREE.Scene();
-  scene.background = new THREE.Color(0xffffff);
+  scene.background = new THREE.Color(0xf2f7ff);
+  scene.fog = new THREE.Fog(0xf2f7ff, 1, 25000);
 
   const dirLight = new THREE.DirectionalLight(0xffffff);
   dirLight.position.set(0, 0, 1);
@@ -158,44 +163,6 @@ function init() {
   const axesHelper = new THREE.AxesHelper(5);
   axesHelper.layers.enableAll();
   scene.add(axesHelper);
-
-  //
-
-  const earthGeometry = new THREE.SphereGeometry(EARTH_RADIUS, 16, 16);
-  // const earthMaterial = new THREE.MeshPhongMaterial({
-  //   specular: 0x333333,
-  //   shininess: 5,
-  //   map: textureLoader.load("textures/planets/earth_atmos_2048.jpg"),
-  //   specularMap: textureLoader.load(
-  //     "textures/planets/earth_specular_2048.jpg"
-  //   ),
-  //   normalMap: textureLoader.load(
-  //     "textures/planets/earth_normal_2048.jpg"
-  //   ),
-  //   normalScale: new THREE.Vector2(0.85, 0.85),
-  // });
-  const earthMaterial = new THREE.MeshBasicMaterial({
-    color: "blue",
-  });
-
-  const earth = new THREE.Mesh(earthGeometry, earthMaterial);
-  scene.add(earth);
-
-  const moonGeometry = new THREE.SphereGeometry(MOON_RADIUS, 16, 16);
-  // const moonMaterial = new THREE.MeshPhongMaterial({
-  //   shininess: 5,
-  //   map: textureLoader.load("textures/planets/moon_1024.jpg"),
-  // });
-  const moonMaterial = new THREE.MeshBasicMaterial({
-    color: "red",
-  });
-  moon = new THREE.Mesh(moonGeometry, moonMaterial);
-  scene.add(moon);
-
-  //
-
-  earth.layers.enableAll();
-  moon.layers.enableAll();
 
   function createCSS2D(obj, name, pos) {
     const div = document.createElement("div");
@@ -210,18 +177,79 @@ function init() {
     label.layers.set(0);
   }
 
-  // createCSS2D(earth, "Earth", EARTH_RADIUS);
-  createCSS2D(
-    earth,
-    `x=${earth.position.x} y=${earth.position.y} z=${earth.position.z}`,
-    -2 * EARTH_RADIUS
+  // loadingManager.
+
+  manager = new THREE.LoadingManager();
+  manager.onLoad = initLoading;
+
+  // textureLoader
+  textureLoader = new THREE.TextureLoader(manager);
+
+  const floorMap = textureLoader.load("./textures/floor.jpg", (texture) => {
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set(100, 100);
+  });
+  floorMap.anisotropy = 4;
+
+  // hdr.exr??
+  new RGBELoader(manager).load(
+    "./imgs/rooitou_park_1k.hdr",
+    function (texture) {
+      texture.mapping = THREE.EquirectangularReflectionMapping;
+
+      scene.background = texture;
+      scene.environment = texture;
+    }
   );
+
+  const progressbarElem = document.querySelector("#progressbar");
+  manager.onProgress = (url, itemsLoaded, itemsTotal) => {
+    progressbarElem.style.width = `${((itemsLoaded / itemsTotal) * 100) | 0}%`;
+
+    console.log((itemsLoaded / itemsTotal) * 100, url);
+  };
+
+  const models = {
+    pig: { url: "./models/animals/Pig.gltf" },
+    cow: { url: "./models/animals/Cow.gltf" },
+    llama: { url: "./models/animals/Llama.gltf" },
+    pug: { url: "./models/animals/Pug.gltf" },
+    sheep: { url: "./models/animals/Sheep.gltf" },
+    zebra: { url: "./models/animals/Zebra.gltf" },
+    horse: { url: "./models/animals/Horse.gltf" },
+    // knight: { url: "./models/knight/KnightCharacter.gltf" },
+  };
+  {
+    const gltfLoader = new GLTFLoader(manager);
+    let temp = 0;
+    for (const model of Object.values(models)) {
+      gltfLoader.load(model.url, (gltf) => {
+        model.gltf = gltf;
+
+        // add gltf
+        gltf.scene.position.x = (temp - 3) * 3;
+        temp++;
+
+        scene.add(gltf.scene);
+      });
+    }
+  }
+
+  function initLoading() {
+    // hide the loading bar
+    const loadingElem = document.querySelector("#loading");
+    loadingElem.style.display = "none";
+
+    // 加载完执行动画！！
+    animate();
+  }
 
   // gltf
 
-  const loader = new GLTFLoader();
+  const loader = new GLTFLoader(manager);
 
-  loader.load("./models/test-curve.glb", (gltf) => {
+  loader.load("./models/test-curve02.glb", (gltf) => {
     // 这个缩放还是模型中的好。。。
     // gltf.scene.scale.set(0.5, 0.5, 0.5);
 
@@ -251,7 +279,7 @@ function init() {
         });
       } else {
         item.material = new THREE.MeshBasicMaterial({
-          color: "gray",
+          map: floorMap,
         });
       }
     });
@@ -271,10 +299,6 @@ function init() {
     scene.add(tube);
 
     scene.add(gltf.scene);
-
-    // 加载完执行动画！！
-
-    animate();
   });
 
   // render.
@@ -356,8 +380,6 @@ function animate() {
   stats.update();
 
   // controls.update();
-
-  moon.position.set(Math.sin(_time) * 5, 0, Math.cos(_time) * 5);
 
   renderer.render(scene, camera);
   labelRenderer.render(scene, camera);

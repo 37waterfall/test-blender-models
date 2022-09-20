@@ -24,13 +24,23 @@
     </div>
 
     <!-- loading -->
-    <div class="loadingBox">loading</div>
+    <!-- <div class="loadingBox">loading</div> -->
+
+    <div id="loading">
+      <div>
+        <div>...loading...</div>
+        <div class="progress"><div id="progressbar"></div></div>
+      </div>
+    </div>
 
     <!-- home -->
     <div class="homeBox">
       <!-- 这里占一半即可。。 -->
       <div class="homeInfoBox">
-        <div class="homeInfo">Peral 's Buck</div>
+        <div class="homeInfo">
+          Peral 's Buck，
+          这里放赛珍珠图片，简介，赛珍珠虚拟文化公园介绍，还有选择语言。
+        </div>
         <div class="selectBox">
           <select id="select">
             <option value="chinese">中文</option>
@@ -75,9 +85,13 @@
     <!-- showinfo - 显示在页面上 -->
     <div class="preInfoBox">
       <div class="title">Header</div>
-      <div class="infoBody">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia,
-        corrupti!
+      <div class="infoBodyBox">
+        <span class="infoBody">
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia,
+          corrupti!
+        </span>
+
+        <span class="detailBox">Read More!</span>
       </div>
     </div>
 
@@ -108,8 +122,8 @@
       </div>
     </div>
 
-    <!-- 操作信息提示框 -->
-    <div class="optionInfoBox">12313</div>
+    <!-- 操作信息提示框, 都放选项里即可，， -->
+    <!-- <div class="optionInfoBox">12313</div> -->
 
     <script type="module" src="./index.js"></script>
   </body>
