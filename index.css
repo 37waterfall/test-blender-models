@@ -127,14 +127,61 @@ body {
   height: 100vh;
 
   display: flex;
+  justify-content: center;
   align-items: center;
-  justify-content: space-around;
 
   color: white;
 }
 
+.homeBox .homeInfoBox {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  flex-direction: column;
+
+  height: 100%;
+}
+
 .homeBox .enterBox .enterBtn {
+  background-color: transparent;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  width: 240px;
+  height: 44px;
+  box-sizing: border-box;
+  border-radius: 20px;
   cursor: pointer;
+
+  transition: all var(--transTime);
+
+  position: relative;
+  overflow: hidden;
+}
+
+.homeBox .enterBox .enterBtn::after {
+  content: "";
+  display: block;
+  background: linear-gradient(
+    to left,
+    rgba(255, 255, 255, 0) 50%,
+    rgba(255, 255, 255, 0.4) 50%
+  );
+  background-size: 210% 100%;
+  background-position: right bottom;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  border-radius: 50px;
+  transition: all 1s;
+  -webkit-transition: all 1s;
+}
+
+.homeBox .enterBox .enterBtn:hover:after {
+  background-position: left bottom;
 }
 
 /* ---main------ */
@@ -201,7 +248,23 @@ body {
 }
 
 .bottomList .active {
+  transition: all var(--transTime);
   color: #fff;
+}
+
+.bottomList .active::before {
+  content: "";
+
+  position: absolute;
+  top: 0;
+
+  width: 0px;
+  height: 0px;
+  border: 10px solid #000;
+  border-top-color: #fff;
+  border-bottom-color: transparent;
+  border-left-color: transparent;
+  border-right-color: transparent;
 }
 
 .bottomList .bottomItem::after {
@@ -244,7 +307,7 @@ body {
   width: 40vw;
 }
 
-.preInfoBox .infoBodyBox .detailBox {
+.preInfoBox .infoBodyBox #readMoreBtn {
   margin-left: 8px;
   border-bottom: 1px solid #fff;
   cursor: pointer;
@@ -254,8 +317,156 @@ body {
   width: 30vw;
 }
 
+/* readMore点击而来，从右侧展开，其他UI组件隐藏！ */
 .detailInfoBox {
+  /* 和homeBox一样！ */
+  position: fixed;
+  right: 0;
+  z-index: 0;
+  background-color: rgba(0, 0, 0, 0.9);
+  width: 50vw;
+  height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+  padding: 6vw 4vw 4vw;
+  box-sizing: border-box;
+
+  overflow-y: auto;
+
+  color: white;
+  text-align: left;
+
   display: none;
+}
+
+.detailInfoBox::-webkit-scrollbar {
+  /* 滚动条整体样式 */
+  width: 4px; /* 高宽分别对应横竖滚动条的尺寸 */
+  height: 8px;
+}
+
+.detailInfoBox::-webkit-scrollbar-thumb {
+  /* 滚动条内滑块的样式 */
+  border-radius: 5px;
+  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.11);
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.11);
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.detailInfoBox .detailCloseBtn {
   position: absolute;
-  z-index: 20;
+  top: 20px;
+  right: 20px;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+}
+.detailInfoBox .closeBtnImg {
+  object-fit: cover;
+  width: 100%;
+}
+
+.detailInfoBox .title {
+  text-align: left;
+  /* margin-top: 60px; */
+  font-size: 60px;
+  position: relative;
+  cursor: pointer;
+}
+
+.detailInfoBox .title::after {
+  content: "";
+  width: 100%;
+  border-bottom: 1px solid #fff;
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+}
+
+.detailInfoBox .title .audioImg {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+}
+
+.detailInfoBox .infoBody {
+  margin-top: 8px;
+  margin-bottom: 8px;
+  text-indent: 2em;
+  line-height: 2em;
+}
+
+.detailInfoBox .imgBox {
+  width: 100%;
+  height: 240px;
+  overflow: hidden;
+  cursor: pointer;
+
+  position: relative;
+  margin-bottom: 8px;
+}
+
+.detailInfoBox .imgBox .img {
+  width: 100%;
+  object-fit: contain;
+}
+
+.detailInfoBox .videoBox {
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  position: absolute;
+  top: 0;
+  z-index: 11;
+}
+
+.detailInfoBox .videoBox .videoBtn {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+}
+
+/* videoPageBox */
+
+.videoPageBox,
+.imgPageBox {
+  position: fixed;
+  z-index: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  box-sizing: border-box;
+
+  opacity: 0;
+}
+
+.videoPageBox .videoCloseBtn,
+.imgPageBox .imgCloseBtn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+}
+
+.videoPageBox .closeBtnImg,
+.imgPageBox .closeBtnImg {
+  object-fit: cover;
+  width: 100%;
+}
+.videoPageBox .video,
+.imgPageBox .img {
+  width: 90vw;
+  height: 80vh;
 }

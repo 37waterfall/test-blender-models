@@ -11,6 +11,11 @@ import Stats from "./libs/stats.module.js";
 
 import { RGBELoader } from "./libs/RGBELoader.js";
 
+// 所有数据来源。。
+import data from "./libs/data.js";
+
+console.log(data);
+
 // let gui;
 
 let camera,
@@ -30,6 +35,14 @@ let tube,
 
 let _time = 0;
 
+// 状态控制。
+let state = {
+  isInit: false, // 是否的首次进入
+  isMoving: false, // 是否处于移动中
+  language: "chinese", // 控制当前选中的语言
+  currentPos: 0, // 当前所处位置
+};
+
 // page
 
 let loadingBox = document.querySelector(".loadingBox");
@@ -37,8 +50,6 @@ let homeBox = document.querySelector(".homeBox");
 
 let topBox = document.querySelector(".topBox");
 let bottomBox = document.querySelector(".bottomBox");
-
-let optionInfoBox = document.querySelector(".optionInfoBox");
 
 // loading 接入实际数据显示！
 // setTimeout(() => {
@@ -96,10 +107,8 @@ rightBtn.addEventListener("click", () => {
 enterBtn.addEventListener("click", () => {
   homeBox.classList.remove("animate__animated", "animate__fadeInRight");
   homeBox.classList.add("animate__animated", "animate__fadeOutRight");
-  topBox.style.top = "0";
-  bottomBox.style.bottom = "0";
-  leftBtn.style.left = "20px";
-  rightBtn.style.right = "20px";
+
+  showUI();
 
   homeBox.style.zIndex = 0;
 });
@@ -108,13 +117,119 @@ listBtn.addEventListener("click", () => {
   homeBox.classList.remove("animate__animated", "animate__fadeOutRight");
   homeBox.classList.add("animate__animated", "animate__fadeInRight");
 
-  topBox.style.top = "-10vh";
-  bottomBox.style.bottom = "-10vh";
-
-  leftBtn.style.left = "-52px";
-  rightBtn.style.right = "-52px";
+  hideUI();
 
   homeBox.style.zIndex = 10;
+});
+
+// show 和 hide ，显示和隐藏UI组件。
+function showUI() {
+  topBox.style.top = "0";
+  bottomBox.style.bottom = "0";
+  leftBtn.style.left = "20px";
+  rightBtn.style.right = "20px";
+}
+
+function hideUI() {
+  topBox.style.top = "-10vh";
+  bottomBox.style.bottom = "-10vh";
+  leftBtn.style.left = "-52px";
+  rightBtn.style.right = "-52px";
+}
+
+// pageInfo
+
+let preHeader = document.querySelector(".preInfoBox .title");
+let preInfoBody = document.querySelector(".preInfoBox .infoBody");
+// 展示页从右侧出来，和选择语言的一样的位置，也要隐藏按钮
+let readMoreBtn = document.querySelector("#readMoreBtn");
+let detailInfoBox = document.querySelector(".detailInfoBox");
+let detailCloseBtn = document.querySelector(".detailCloseBtn");
+
+// preHeader.addEventListener("click", (e) => {
+//   preHeader.innerHTML = data.ch.gc.gcBody.header;
+//   preInfoBody.innerHTML = data.ch.gc.gcBody.info.slice(0, 100) + "...";
+// });
+
+readMoreBtn.addEventListener("click", () => {
+  detailInfoBox.style.display = "block";
+
+  detailInfoBox.classList.remove("animate__animated", "animate__fadeOutRight");
+  detailInfoBox.classList.add("animate__animated", "animate__fadeInRight");
+
+  hideUI();
+
+  detailInfoBox.style.zIndex = 10;
+});
+
+detailCloseBtn.addEventListener("click", () => {
+  detailInfoBox.classList.remove("animate__animated", "animate__fadeInRight");
+  detailInfoBox.classList.add("animate__animated", "animate__fadeOutRight");
+
+  showUI();
+
+  detailInfoBox.style.zIndex = 0;
+});
+
+// videoPageInfo
+// 在detailInfoBox里的按钮。。
+let videoBoxBtn = document.querySelector("#videoBoxBtn");
+
+let videoPageBox = document.querySelector(".videoPageBox");
+let videoCloseBtn = document.querySelector("#videoCloseBtn");
+let videoContent = document.querySelector("#videoContent");
+
+videoBoxBtn.addEventListener("click", () => {
+  videoPageBox.style.opacity = 1;
+  videoPageBox.style.zIndex = 11;
+
+  // 需要从网络获取video。。
+
+  videoContent.src = "./video/test-video.mp4";
+  videoContent.play();
+
+  videoPageBox.classList.remove("animate__animated", "animate__fadeOutUp");
+  videoPageBox.classList.add("animate__animated", "animate__fadeInDown");
+
+  hideUI();
+});
+
+videoCloseBtn.addEventListener("click", () => {
+  videoPageBox.classList.remove("animate__animated", "animate__fadeInDown");
+  videoPageBox.classList.add("animate__animated", "animate__fadeOutUp");
+
+  // 停止播放视频！
+  videoContent.pause();
+
+  showUI();
+});
+
+// imgPageBox
+
+let imgBoxBtn = document.querySelector("#imgBoxBtn");
+
+let imgPageBox = document.querySelector(".imgPageBox");
+let imgCloseBtn = document.querySelector("#imgCloseBtn");
+let imgContent = document.querySelector("#imgContent");
+
+imgBoxBtn.addEventListener("click", () => {
+  imgPageBox.style.opacity = 1;
+  imgPageBox.style.zIndex = 11;
+
+  // 需要从网络获取img。。
+  imgContent.src = "./imgs/test-img.jpg";
+
+  imgPageBox.classList.remove("animate__animated", "animate__fadeOutUp");
+  imgPageBox.classList.add("animate__animated", "animate__fadeInDown");
+
+  hideUI();
+});
+
+imgCloseBtn.addEventListener("click", () => {
+  imgPageBox.classList.remove("animate__animated", "animate__fadeInDown");
+  imgPageBox.classList.add("animate__animated", "animate__fadeOutUp");
+
+  showUI();
 });
 
 // ---------------
@@ -148,19 +263,18 @@ function init() {
     300
   );
   camera.position.set(10, 5, 20);
-  camera.layers.enableAll();
-  camera.layers.toggle(1);
 
   scene = new THREE.Scene();
   scene.background = new THREE.Color(0xf2f7ff);
   scene.fog = new THREE.Fog(0xf2f7ff, 1, 25000);
 
+  // light
   const dirLight = new THREE.DirectionalLight(0xffffff);
   dirLight.position.set(0, 0, 1);
   dirLight.layers.enableAll();
   scene.add(dirLight);
 
-  const axesHelper = new THREE.AxesHelper(5);
+  const axesHelper = new THREE.AxesHelper(50);
   axesHelper.layers.enableAll();
   scene.add(axesHelper);
 
@@ -242,6 +356,7 @@ function init() {
     loadingElem.style.display = "none";
 
     // 加载完执行动画！！
+
     animate();
   }
 
@@ -320,7 +435,7 @@ function init() {
   controls = new OrbitControls(camera, labelRenderer.domElement);
   controls.minDistance = 5;
   controls.maxDistance = 200;
-  controls.enableRotate = true; // 开局自动旋转
+  // controls.enableRotate = true; // 开局自动旋转
 
   //
 
