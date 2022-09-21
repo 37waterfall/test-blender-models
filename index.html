@@ -20,6 +20,9 @@
       </button>
       <button class="rightBtn btn" id="rightBtn">
         <img src="./icons/right.png" alt="right" />
+
+        <span class="clickBtn" style="top: 44px; left: 10px"><img class="img" src="./icons/click.png" alt="click"></span>
+
       </button>
     </div>
 
@@ -34,30 +37,54 @@
     </div>
 
     <!-- home -->
-    <div class="homeBox">
+    <div class="homeBox scroll">
+
       <!-- 这里占一半即可。。 -->
-      <div class="homeInfoBox">
         <div class="homeInfo">
-          Peral 's Buck，
-          这里放赛珍珠图片，简介，赛珍珠虚拟文化公园介绍，还有选择语言。
+          <div class="imgBox">
+            <img class="img" src="./imgs/img.jpg" alt="img" />
+          </div>
+          <p class="age">赛珍珠（Peral S. Buck）1892-1973</p>
+          <p class="info">
+           <span style="font-size: 1.2em; font-weight: 700;">赛珍珠</span>是美国第一位同时获得普利策文学奖和诺贝尔文学奖的女作家，曾在江苏镇江居住18年之久，被称为“一座沟通东西方文明的人桥”，赛珍珠文化公园是为了纪念赛珍珠而建设的，包括赛珍珠故居，赛珍珠纪念馆，大地翰墨书画馆，赛珍珠研究会等。</br>
+          </p>
         </div>
-        <div class="selectBox">
-          <select id="select">
-            <option value="chinese">中文</option>
-            <option value="english">English</option>
-          </select>
-        </div>
+        
+        <ul id="select">
+          <li>
+              <div class="select-head">
+                  <span class="select-head-cont"></span>
+                  <span class="select-icon">▼</span>
+              </div>
+              <ul class="option">
+                  <li class="option-item" data-language="ch">中文</li>
+                  <li class="option-item" data-language="en">English</li>
+              </ul>
+              
+          </li>
+      </ul>
+
+
         <div class="enterBox">
           <!-- 这里也要考虑中英文 -->
-          <button class="enterBtn" id="enterBtn">进入页面</button>
+          <button class="enterBtn" id="enterBtn">进入场景</button>
+          <span class="clickBtn"><img class="img" src="./icons/click.png" alt="click"></span>
         </div>
-      </div>
+
+        <!-- 提示信息 -->
+        <ul class="usageInfo">
+          <li class="info">导览模式可以跟随镜头脚本，了解整体内容</p>
+          <li class="info">探索模式可以在场景内自由参观，了解更多内容</p>
+        </ul>
     </div>
 
     <!-- main -->
     <div class="mainBox">
       <div class="topBox">
-        <div class="topL">导览/探索</div>
+        <div class="topL">
+          <span class="guidMode active">导览</span> /
+          <span class="travelMode">探索</span>
+        </div>
         <div class="topM">赛珍珠文化公园</div>
         <div class="topR">
           <!-- <img id="infoBtn" class="icon" src="./icons/info.png" alt="info" /> -->
@@ -96,7 +123,7 @@
     </div>
 
     <!-- showinfo - 右侧显示！，统一位置展示信息，操作更方便！ -->
-    <div class="detailInfoBox">
+    <div class="detailInfoBox scroll">
       <div class="detailCloseBtn">
         <img class="closeBtnImg" src="./icons/delete.png" alt="close" />
       </div>
