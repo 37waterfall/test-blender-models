@@ -25,7 +25,8 @@ let camera,
   stats,
   controls,
   manager,
-  textureLoader;
+  textureLoader,
+  mixer;
 
 let tube,
   curve,
@@ -395,6 +396,19 @@ function init() {
 
   const loader = new GLTFLoader(manager);
 
+  // birdAnimation
+  loader.load("./models/birdAnimation.glb", (gltf) => {
+    const model = gltf.scene;
+
+    model.scale.set(3, 3, 3);
+    model.position.set(0, 6, 3);
+    model.rotation.set(0, Math.PI, 0);
+    mixer = new THREE.AnimationMixer(model);
+    mixer.clipAction(gltf.animations[0]).play();
+
+    scene.add(gltf.scene);
+  });
+
   loader.load("./models/test-curve02.glb", (gltf) => {
     // 这个缩放还是模型中的好。。。
     // gltf.scene.scale.set(0.5, 0.5, 0.5);
@@ -524,6 +538,10 @@ function animate() {
   }
 
   stats.update();
+
+  const delta = clock.getDelta();
+
+  mixer.update(delta);
 
   // controls.update();
 
