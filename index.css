@@ -557,7 +557,7 @@ ul {
   cursor: pointer;
 
   position: relative;
-  margin-bottom: 8px;
+  margin-bottom: 16px;
 
   display: flex;
   justify-content: center;

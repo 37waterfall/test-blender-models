@@ -32,7 +32,34 @@ let tube,
   curve,
   curveVector3 = [],
   haltPoints = [],
-  haltIndex = 0;
+  haltIndex = -1;
+
+let wordsArray = [
+  "gc_body",
+  "gc_szzSculpture",
+  "gc_ddzsSculpture",
+  "gc_sxb",
+  "gc_zzsw",
+
+  "gj_body",
+  "gj_ddgg",
+  "gj_sz",
+  "gj_sg",
+
+  "jng_body",
+  "jng_szzxx",
+  "jng_ddzt",
+  "jng_szzxjk",
+  "jng_nksyl",
+  "jng_szzyl",
+  "jng_szzjzxqpxb",
+  "jng_kxsxx",
+  "jng_wmxx",
+  "jng_rdwxybjc",
+  "jng_szzsjysc",
+
+  "ddhm_empty",
+];
 
 let _time = 0;
 
@@ -40,7 +67,7 @@ let _time = 0;
 let state = {
   isInit: false, // 是否的首次进入
   isMoving: false, // 是否处于移动中
-  language: "chinese", // 控制当前选中的语言
+  language: "ch", // 控制当前选中的语言,对应data数据。
   currentPos: 0, // 当前所处位置
 };
 
@@ -51,6 +78,8 @@ let homeBox = document.querySelector(".homeBox");
 
 let topBox = document.querySelector(".topBox");
 let bottomBox = document.querySelector(".bottomBox");
+
+let preInfoBox = document.querySelector(".preInfoBox");
 
 // loading 接入实际数据显示！
 // setTimeout(() => {
@@ -96,6 +125,9 @@ leftBtn.addEventListener("click", () => {
   haltIndex--;
   haltIndex %= haltPoints.length;
   moveDirection = "Back";
+
+  // 隐藏文字 - 移动中！
+  hideWords();
 });
 
 rightBtn.addEventListener("click", () => {
@@ -103,6 +135,9 @@ rightBtn.addEventListener("click", () => {
   haltIndex++;
   haltIndex %= haltPoints.length;
   moveDirection = "Front";
+
+  // 隐藏文字 - 移动中！
+  hideWords();
 });
 
 enterBtn.addEventListener("click", () => {
@@ -171,6 +206,7 @@ function hideUI() {
 
 // pageInfo
 
+// 修改文字内容！
 let preHeader = document.querySelector(".preInfoBox .title");
 let preInfoBody = document.querySelector(".preInfoBox .infoBody");
 // 展示页从右侧出来，和选择语言的一样的位置，也要隐藏按钮
@@ -178,10 +214,35 @@ let readMoreBtn = document.querySelector("#readMoreBtn");
 let detailInfoBox = document.querySelector(".detailInfoBox");
 let detailCloseBtn = document.querySelector(".detailCloseBtn");
 
-// preHeader.addEventListener("click", (e) => {
-//   preHeader.innerHTML = data.ch.gc.gcBody.header;
-//   preInfoBody.innerHTML = data.ch.gc.gcBody.info.slice(0, 100) + "...";
-// });
+let detailHeader = document.querySelector(".detailInfoBox .title");
+let detailInfoBody = document.querySelector(".detailInfoBox .infoBody");
+
+// 停止的时候显示文字！
+function showWords() {
+  preInfoBox.classList.remove("animate__animated", "animate__fadeOutLeft");
+  preInfoBox.classList.add("animate__animated", "animate__fadeInLeft");
+}
+
+function hideWords() {
+  preInfoBox.classList.remove("animate__animated", "animate__fadeInLeft");
+  preInfoBox.classList.add("animate__animated", "animate__fadeOutLeft");
+}
+
+function handleWords() {
+  // 修改文字内容！preInfoBox + detailInfoBox
+  preHeader.innerText = data[state.language][wordsArray[haltIndex]].header;
+  preInfoBody.innerHTML = `${data[state.language][
+    wordsArray[haltIndex]
+  ].info.slice(0, 50)}
+      ${
+        data[state.language][wordsArray[haltIndex]].info.length > 50
+          ? "..."
+          : ""
+      }`;
+
+  detailHeader.innerText = data[state.language][wordsArray[haltIndex]].header;
+  detailInfoBody.innerHTML = data[state.language][wordsArray[haltIndex]].info;
+}
 
 readMoreBtn.addEventListener("click", () => {
   detailInfoBox.style.display = "block";
@@ -276,7 +337,7 @@ imgCloseBtn.addEventListener("click", () => {
 //   },
 //   "Enable All": function () {
 //     camera.layers.enableAll();
-//   },
+//   },topBox
 
 //   "Disable All": function () {
 //     camera.layers.disableAll();
@@ -331,6 +392,12 @@ function init() {
   // textureLoader
   textureLoader = new THREE.TextureLoader(manager);
 
+  const texutres = {
+    floorMap: {
+      url: "./textures/floor.jpg",
+    },
+  };
+
   const floorMap = textureLoader.load("./textures/floor.jpg", (texture) => {
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
@@ -356,26 +423,27 @@ function init() {
     console.log((itemsLoaded / itemsTotal) * 100, url);
   };
 
+  // 加载所有模型 - 材质和模型分离！在加载中上材质！
   const models = {
-    pig: { url: "./models/animals/Pig.gltf" },
-    cow: { url: "./models/animals/Cow.gltf" },
-    llama: { url: "./models/animals/Llama.gltf" },
-    pug: { url: "./models/animals/Pug.gltf" },
-    sheep: { url: "./models/animals/Sheep.gltf" },
-    zebra: { url: "./models/animals/Zebra.gltf" },
-    horse: { url: "./models/animals/Horse.gltf" },
-    // knight: { url: "./models/knight/KnightCharacter.gltf" },
+    // jng: { url: "./models/buildings/jng.glb" },
+    // gj: { url: "./models/buildings/gj.glb" },
+    // szzyjh: { url: "./models/buildings/szzyjh.glb" },
+    // ddzs: { url: "./models/buildings/ddzs.glb" },
+    // test: { url: "./models/buildings/test.glb" },
+    szzSculpture: { url: "./models/szzSculpture.glb" },
   };
   {
     const gltfLoader = new GLTFLoader(manager);
-    let temp = 0;
     for (const model of Object.values(models)) {
       gltfLoader.load(model.url, (gltf) => {
-        model.gltf = gltf;
+        // 这一步是如果有动画的话，可以进一步操作！
+        // model.gltf = gltf;
 
-        // add gltf
-        gltf.scene.position.x = (temp - 3) * 3;
-        temp++;
+        // gltf.scene.traverse((item) => {
+        //   item.material = new THREE.MeshBasicMaterial({
+        //     map: floorMap,
+        //   });
+        // });
 
         scene.add(gltf.scene);
       });
@@ -396,7 +464,7 @@ function init() {
 
   const loader = new GLTFLoader(manager);
 
-  // birdAnimation
+  // birdAnimation - 丰富画面内容。
   loader.load("./models/birdAnimation.glb", (gltf) => {
     const model = gltf.scene;
 
@@ -409,17 +477,19 @@ function init() {
     scene.add(gltf.scene);
   });
 
-  loader.load("./models/test-curve02.glb", (gltf) => {
+  // 专门放点的model -> 创建曲线 -> 游览路径！！
+  // loader.load("./models/test-curve02.glb", (gltf) => {
+  loader.load("./models/test-curve.glb", (gltf) => {
     // 这个缩放还是模型中的好。。。
     // gltf.scene.scale.set(0.5, 0.5, 0.5);
 
     gltf.scene.traverse((item) => {
       if (item.isMesh && item.name.indexOf("Cube") !== -1) {
-        // item.material = new THREE.MeshBasicMaterial({
-        //   color: "green",
-        // });
-        // item.scale.set(0.1, 0.1, 0.1);
-        item.visible = false;
+        item.material = new THREE.MeshBasicMaterial({
+          color: "green",
+        });
+        item.scale.set(1, 1, 1);
+        item.visible = true;
         const tempText = `
           ${item.name}, 
           x=${item.position.x.toFixed(2)}, 
@@ -433,15 +503,17 @@ function init() {
         if (item.name.endsWith("h")) {
           haltPoints.push(item.position);
         }
-      } else if (item.name.indexOf("Text") !== -1) {
-        item.material = new THREE.MeshBasicMaterial({
-          color: "blue",
-        });
-      } else {
-        item.material = new THREE.MeshBasicMaterial({
-          map: floorMap,
-        });
       }
+
+      // else if (item.name.indexOf("Text") !== -1) {
+      //   item.material = new THREE.MeshBasicMaterial({
+      //     color: "blue",
+      //   });
+      // } else {
+      //   item.material = new THREE.MeshBasicMaterial({
+      //     map: floorMap,
+      //   });
+      // }
     });
 
     console.log(haltPoints);
@@ -481,6 +553,7 @@ function init() {
   controls.minDistance = 5;
   controls.maxDistance = 200;
   // controls.enableRotate = true; // 开局自动旋转
+  // controls.enabled = false;
 
   //
 
@@ -500,11 +573,27 @@ function updateCamera() {
   const pos = curve.getPointAt(t);
   const pos2 = curve.getPointAt(t2);
 
+  // 如果停止的数组没有，需要判空。。
   const _temp = haltPoints[haltIndex].clone().sub(pos.clone());
 
-  if (_temp.x < 0.5 && _temp.y < 0.5 && _temp.z < 0.5) {
+  // controls.target = pos.clone();
+
+  console.log(_temp, haltIndex, controls);
+
+  if (
+    _temp.x > -0.5 &&
+    _temp.x < 0.5 &&
+    _temp.y > -0.5 &&
+    _temp.y < 0.5 &&
+    _temp.z > -0.5 &&
+    _temp.z < 0.5
+  ) {
     // alert("1");
     flag = false;
+
+    // 显示文字 + 文字内容（根据halIndex判断。一个字符串数组，从对象中获取！。）！
+    handleWords();
+    showWords();
   }
 
   camera.position.copy(pos);
