@@ -439,12 +439,12 @@ function init() {
     },
   };
 
-  const floorMap = textureLoader.load("./textures/floor.jpg", (texture) => {
-    texture.wrapS = THREE.RepeatWrapping;
-    texture.wrapT = THREE.RepeatWrapping;
-    texture.repeat.set(100, 100);
-  });
-  floorMap.anisotropy = 4;
+  // const floorMap = textureLoader.load("./textures/floor.jpg", (texture) => {
+  //   texture.wrapS = THREE.RepeatWrapping;
+  //   texture.wrapT = THREE.RepeatWrapping;
+  //   texture.repeat.set(100, 100);
+  // });
+  // floorMap.anisotropy = 4;
 
   // hdr.exr??
   // new RGBELoader(manager).load(
@@ -488,6 +488,11 @@ function init() {
         //     map: floorMap,
         //   });
         // });
+
+        gltf.scene.traverse((item) => {
+          item.material = new THREE.MeshLambertMaterial({ color: 0xffffff });
+          item.material.color.setHSL(0.095, 1, 0.75);
+        });
 
         scene.add(gltf.scene);
       });
