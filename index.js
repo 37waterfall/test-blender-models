@@ -70,6 +70,8 @@ let state = {
   language: "ch", // 控制当前选中的语言,对应data数据。
   currentPos: 0, // 当前所处位置
 };
+// audio
+let clickAudio = document.querySelector("#clickAudio");
 
 // page
 
@@ -126,8 +128,11 @@ leftBtn.addEventListener("click", () => {
   haltIndex %= haltPoints.length;
   moveDirection = "Back";
 
+  debugger;
+
   // 隐藏文字 - 移动中！
   hideWords();
+  clickAudio.play();
 });
 
 rightBtn.addEventListener("click", () => {
@@ -138,6 +143,7 @@ rightBtn.addEventListener("click", () => {
 
   // 隐藏文字 - 移动中！
   hideWords();
+  clickAudio.play();
 });
 
 enterBtn.addEventListener("click", () => {
@@ -430,12 +436,15 @@ function init() {
     // szzyjh: { url: "./models/buildings/szzyjh.glb" },
     // ddzs: { url: "./models/buildings/ddzs.glb" },
     // test: { url: "./models/buildings/test.glb" },
-    szzSculpture: { url: "./models/szzSculpture.glb" },
+
+    // szzSculpture: { url: "./models/szzSculpture.glb" },
+    test: { url: "./models/test-02.glb" },
+    testUv: { url: "./models/test-uv.glb" },
   };
   {
     const gltfLoader = new GLTFLoader(manager);
-    for (const model of Object.values(models)) {
-      gltfLoader.load(model.url, (gltf) => {
+    for (const [key, value] of Object.entries(models)) {
+      gltfLoader.load(value.url, (gltf) => {
         // 这一步是如果有动画的话，可以进一步操作！
         // model.gltf = gltf;
 
@@ -578,7 +587,7 @@ function updateCamera() {
 
   // controls.target = pos.clone();
 
-  console.log(_temp, haltIndex, controls);
+  // console.log(_temp, haltIndex, controls);
 
   if (
     _temp.x > -0.5 &&
