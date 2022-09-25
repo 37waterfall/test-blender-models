@@ -367,15 +367,50 @@ function init() {
   scene.background = new THREE.Color(0xf2f7ff);
   scene.fog = new THREE.Fog(0xf2f7ff, 1, 25000);
 
-  // light
-  const dirLight = new THREE.DirectionalLight(0xffffff);
-  dirLight.position.set(0, 0, 1);
-  dirLight.layers.enableAll();
+  // light * 3
+  // const ambientLight = new THREE.AmbientLight(0xcccccc);
+  // scene.add(ambientLight);
+
+  const hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.6);
+  hemiLight.color.setHSL(0.6, 1, 0.6);
+  hemiLight.groundColor.setHSL(0.095, 1, 0.75);
+  hemiLight.position.set(0, 50, 0);
+  scene.add(hemiLight);
+
+  // const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+  // dirLight.position.set(0, 0, 1);
+  // scene.add(dirLight);
+
+  const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+  dirLight.color.setHSL(0.1, 1, 0.95);
+  dirLight.position.set(-1, 1.75, 1);
+  dirLight.position.multiplyScalar(30);
   scene.add(dirLight);
 
-  const axesHelper = new THREE.AxesHelper(50);
-  axesHelper.layers.enableAll();
-  scene.add(axesHelper);
+  // SKYDOME
+
+  const vertexShader = document.getElementById("vertexShader").textContent;
+  const fragmentShader = document.getElementById("fragmentShader").textContent;
+  const uniforms = {
+    topColor: { value: new THREE.Color(0x0077ff) },
+    bottomColor: { value: new THREE.Color(0xffffff) },
+    offset: { value: 33 },
+    exponent: { value: 0.6 },
+  };
+  uniforms["topColor"].value.copy(hemiLight.color);
+
+  scene.fog.color.copy(uniforms["bottomColor"].value);
+
+  const skyGeo = new THREE.SphereGeometry(4000, 32, 15);
+  const skyMat = new THREE.ShaderMaterial({
+    uniforms: uniforms,
+    vertexShader: vertexShader,
+    fragmentShader: fragmentShader,
+    side: THREE.BackSide,
+  });
+
+  const sky = new THREE.Mesh(skyGeo, skyMat);
+  scene.add(sky);
 
   function createCSS2D(obj, name, pos) {
     const div = document.createElement("div");
@@ -412,15 +447,15 @@ function init() {
   floorMap.anisotropy = 4;
 
   // hdr.exr??
-  new RGBELoader(manager).load(
-    "./imgs/rooitou_park_1k.hdr",
-    function (texture) {
-      texture.mapping = THREE.EquirectangularReflectionMapping;
+  // new RGBELoader(manager).load(
+  //   "./imgs/rooitou_park_1k.hdr",
+  //   function (texture) {
+  //     texture.mapping = THREE.EquirectangularReflectionMapping;
 
-      scene.background = texture;
-      scene.environment = texture;
-    }
-  );
+  //     scene.background = texture;
+  //     scene.environment = texture;
+  //   }
+  // );
 
   const progressbarElem = document.querySelector("#progressbar");
   manager.onProgress = (url, itemsLoaded, itemsTotal) => {
@@ -438,7 +473,7 @@ function init() {
     // test: { url: "./models/buildings/test.glb" },
 
     // szzSculpture: { url: "./models/szzSculpture.glb" },
-    test: { url: "./models/test-02.glb" },
+    test: { url: "./models/test.glb" },
     testUv: { url: "./models/test-uv.glb" },
   };
   {
@@ -559,8 +594,8 @@ function init() {
   document.body.appendChild(stats.dom);
 
   controls = new OrbitControls(camera, labelRenderer.domElement);
-  controls.minDistance = 5;
-  controls.maxDistance = 200;
+  controls.minDistance = 0.1;
+  controls.maxDistance = 1000;
   // controls.enableRotate = true; // 开局自动旋转
   // controls.enabled = false;
 
