@@ -69,6 +69,7 @@ let state = {
   isMoving: false, // 是否处于移动中
   language: "ch", // 控制当前选中的语言,对应data数据。
   currentPos: 0, // 当前所处位置
+  travelMode: "guide", // explorer
 };
 // audio
 let clickAudio = document.querySelector("#clickAudio");
@@ -79,6 +80,8 @@ let loadingBox = document.querySelector(".loadingBox");
 let homeBox = document.querySelector(".homeBox");
 
 let topBox = document.querySelector(".topBox");
+let guideModeBtn = document.querySelector("#guideBtn");
+let explorerBtn = document.querySelector("#explorerBtn");
 
 let bottomBox = document.querySelector(".bottomBox");
 
@@ -89,6 +92,16 @@ let preInfoBox = document.querySelector(".preInfoBox");
 //   loadingBox.classList.add("animate__animated", "animate__fadeOut");
 //   loadingBox.style.zIndex = 0;
 // }, 3000);
+
+// 模式切换
+
+guideModeBtn.addEventListener("click", () => {
+  controls.enabled = true;
+});
+
+explorerBtn.addEventListener("click", () => {
+  controls.enabled = false;
+});
 
 // ---------------
 // btn
@@ -600,6 +613,9 @@ function init() {
 
   stats = new Stats();
   document.body.appendChild(stats.dom);
+
+  stats.dom.style.position = "absolute";
+  stats.dom.style.top = "12vh";
 
   controls = new OrbitControls(camera, labelRenderer.domElement);
   controls.minDistance = 0.1;

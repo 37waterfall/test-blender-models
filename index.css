@@ -360,6 +360,16 @@ ul {
   box-sizing: border-box;
 }
 
+.topBox .topL .guideMode,
+.topBox .topL .explorerMode {
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+}
+
+.topBox .topL .active {
+  color: #fff;
+}
+
 .topBox .topR .icon {
   width: 28px;
   height: 28px;

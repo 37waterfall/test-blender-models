@@ -44,7 +44,7 @@
     </script>
 
     <script src="./libs/virtualjoystick.js"></script>
-
+    controlsOrbit
     <script type="module">
       import * as THREE from "./libs/three.module.js";
 
@@ -59,11 +59,16 @@
 
       import { GUI } from "./libs/lil-gui.module.min.js";
 
+      // test-controls
+      import { OrbitControls } from "./libs/OrbitControls.js";
+
       const clock = new THREE.Clock();
 
       const scene = new THREE.Scene();
       scene.background = new THREE.Color(0x88ccee);
-      scene.fog = new THREE.Fog(0x88ccee, 0, 50);
+      // scene.fog = new THREE.Fog(0x88ccee, 0, 50);
+
+      scene.position.set(0, -10, 0);
 
       const camera = new THREE.PerspectiveCamera(
         70,
@@ -74,18 +79,24 @@
       camera.rotation.order = "YXZ";
 
       // joystick
-      var joystick = new VirtualJoystick({
-        container: document.getElementById("container"),
-        mouseSupport: true,
-        limitStickTravel: true,
-        stickRadius: 50,
-      });
-      joystick.addEventListener("touchStart", function () {
-        console.log("down");
-      });
-      joystick.addEventListener("touchEnd", function () {
-        console.log("up");
-      });
+      var joystick = createJoystick();
+
+      function createJoystick() {
+        var joystick = new VirtualJoystick({
+          container: document.getElementById("container"),
+          mouseSupport: true,
+          limitStickTravel: true,
+          stickRadius: 50,
+        });
+        joystick.addEventListener("touchStart", function () {
+          console.log("down");
+        });
+        joystick.addEventListener("touchEnd", function () {
+          console.log("up");
+        });
+
+        return joystick;
+      }
 
       const outputEl = document.getElementById("result");
 
@@ -140,33 +151,33 @@
 
       const GRAVITY = 30;
 
-      const NUM_SPHERES = 100;
-      const SPHERE_RADIUS = 0.2;
+      // const NUM_SPHERES = 100;
+      // const SPHERE_RADIUS = 0.2;
 
       const STEPS_PER_FRAME = 5;
 
-      const sphereGeometry = new THREE.IcosahedronGeometry(SPHERE_RADIUS, 5);
-      const sphereMaterial = new THREE.MeshLambertMaterial({ color: 0xbbbb44 });
+      // const sphereGeometry = new THREE.IcosahedronGeometry(SPHERE_RADIUS, 5);
+      // const sphereMaterial = new THREE.MeshLambertMaterial({ color: 0xbbbb44 });
 
-      const spheres = [];
-      let sphereIdx = 0;
+      // const spheres = [];
+      // let sphereIdx = 0;
 
-      for (let i = 0; i < NUM_SPHERES; i++) {
-        const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-        sphere.castShadow = true;
-        sphere.receiveShadow = true;
+      // for (let i = 0; i < NUM_SPHERES; i++) {
+      //   const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+      //   sphere.castShadow = true;
+      //   sphere.receiveShadow = true;
 
-        scene.add(sphere);
+      //   scene.add(sphere);
 
-        spheres.push({
-          mesh: sphere,
-          collider: new THREE.Sphere(
-            new THREE.Vector3(0, -100, 0),
-            SPHERE_RADIUS
-          ),
-          velocity: new THREE.Vector3(),
-        });
-      }
+      //   spheres.push({
+      //     mesh: sphere,
+      //     collider: new THREE.Sphere(
+      //       new THREE.Vector3(0, -100, 0),
+      //       SPHERE_RADIUS
+      //     ),
+      //     velocity: new THREE.Vector3(),
+      //   });
+      // }
 
       const worldOctree = new Octree();
 
@@ -196,6 +207,14 @@
       //     keyStates[event.code] = false;
       //   });
 
+      container.addEventListener("dblclick", () => {
+        // 锁定画面。。
+        // mouseTime = performance.now();
+
+        // joystick.destory();
+        console.log(joystick);
+      });
+
       //   container.addEventListener("mousedown", () => {
       // 	// 锁定画面。。
       //     document.body.requestPointerLock();
@@ -223,25 +242,25 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
       }
 
-      function throwBall() {
-        const sphere = spheres[sphereIdx];
+      // function throwBall() {
+      //   const sphere = spheres[sphereIdx];
 
-        camera.getWorldDirection(playerDirection);
+      //   camera.getWorldDirection(playerDirection);
 
-        sphere.collider.center
-          .copy(playerCollider.end)
-          .addScaledVector(playerDirection, playerCollider.radius * 1.5);
+      //   sphere.collider.center
+      //     .copy(playerCollider.end)
+      //     .addScaledVector(playerDirection, playerCollider.radius * 1.5);
 
-        // throw the ball with more force if we hold the button longer, and if we move forward
+      //   // throw the ball with more force if we hold the button longer, and if we move forward
 
-        const impulse =
-          15 + 30 * (1 - Math.exp((mouseTime - performance.now()) * 0.001));
+      //   const impulse =
+      //     15 + 30 * (1 - Math.exp((mouseTime - performance.now()) * 0.001));
 
-        sphere.velocity.copy(playerDirection).multiplyScalar(impulse);
-        sphere.velocity.addScaledVector(playerVelocity, 2);
+      //   sphere.velocity.copy(playerDirection).multiplyScalar(impulse);
+      //   sphere.velocity.addScaledVector(playerVelocity, 2);
 
-        sphereIdx = (sphereIdx + 1) % spheres.length;
-      }
+      //   sphereIdx = (sphereIdx + 1) % spheres.length;
+      // }
 
       function playerCollisions() {
         const result = worldOctree.capsuleIntersect(playerCollider);
@@ -282,107 +301,107 @@
         camera.position.copy(playerCollider.end);
       }
 
-      function playerSphereCollision(sphere) {
-        const center = vector1
-          .addVectors(playerCollider.start, playerCollider.end)
-          .multiplyScalar(0.5);
+      // function playerSphereCollision(sphere) {
+      //   const center = vector1
+      //     .addVectors(playerCollider.start, playerCollider.end)
+      //     .multiplyScalar(0.5);
 
-        const sphere_center = sphere.collider.center;
+      //   const sphere_center = sphere.collider.center;
 
-        const r = playerCollider.radius + sphere.collider.radius;
-        const r2 = r * r;
+      //   const r = playerCollider.radius + sphere.collider.radius;
+      //   const r2 = r * r;
 
-        // approximation: player = 3 spheres
+      //   // approximation: player = 3 spheres
 
-        for (const point of [
-          playerCollider.start,
-          playerCollider.end,
-          center,
-        ]) {
-          const d2 = point.distanceToSquared(sphere_center);
+      //   for (const point of [
+      //     playerCollider.start,
+      //     playerCollider.end,
+      //     center,
+      //   ]) {
+      //     const d2 = point.distanceToSquared(sphere_center);
 
-          if (d2 < r2) {
-            const normal = vector1.subVectors(point, sphere_center).normalize();
-            const v1 = vector2
-              .copy(normal)
-              .multiplyScalar(normal.dot(playerVelocity));
-            const v2 = vector3
-              .copy(normal)
-              .multiplyScalar(normal.dot(sphere.velocity));
+      //     if (d2 < r2) {
+      //       const normal = vector1.subVectors(point, sphere_center).normalize();
+      //       const v1 = vector2
+      //         .copy(normal)
+      //         .multiplyScalar(normal.dot(playerVelocity));
+      //       const v2 = vector3
+      //         .copy(normal)
+      //         .multiplyScalar(normal.dot(sphere.velocity));
 
-            playerVelocity.add(v2).sub(v1);
-            sphere.velocity.add(v1).sub(v2);
+      //       playerVelocity.add(v2).sub(v1);
+      //       sphere.velocity.add(v1).sub(v2);
 
-            const d = (r - Math.sqrt(d2)) / 2;
-            sphere_center.addScaledVector(normal, -d);
-          }
-        }
-      }
+      //       const d = (r - Math.sqrt(d2)) / 2;
+      //       sphere_center.addScaledVector(normal, -d);
+      //     }
+      //   }
+      // }
 
-      function spheresCollisions() {
-        for (let i = 0, length = spheres.length; i < length; i++) {
-          const s1 = spheres[i];
+      // function spheresCollisions() {
+      //   for (let i = 0, length = spheres.length; i < length; i++) {
+      //     const s1 = spheres[i];
 
-          for (let j = i + 1; j < length; j++) {
-            const s2 = spheres[j];
+      //     for (let j = i + 1; j < length; j++) {
+      //       const s2 = spheres[j];
 
-            const d2 = s1.collider.center.distanceToSquared(s2.collider.center);
-            const r = s1.collider.radius + s2.collider.radius;
-            const r2 = r * r;
+      //       const d2 = s1.collider.center.distanceToSquared(s2.collider.center);
+      //       const r = s1.collider.radius + s2.collider.radius;
+      //       const r2 = r * r;
 
-            if (d2 < r2) {
-              const normal = vector1
-                .subVectors(s1.collider.center, s2.collider.center)
-                .normalize();
-              const v1 = vector2
-                .copy(normal)
-                .multiplyScalar(normal.dot(s1.velocity));
-              const v2 = vector3
-                .copy(normal)
-                .multiplyScalar(normal.dot(s2.velocity));
+      //       if (d2 < r2) {
+      //         const normal = vector1
+      //           .subVectors(s1.collider.center, s2.collider.center)
+      //           .normalize();
+      //         const v1 = vector2
+      //           .copy(normal)
+      //           .multiplyScalar(normal.dot(s1.velocity));
+      //         const v2 = vector3
+      //           .copy(normal)
+      //           .multiplyScalar(normal.dot(s2.velocity));
 
-              s1.velocity.add(v2).sub(v1);
-              s2.velocity.add(v1).sub(v2);
+      //         s1.velocity.add(v2).sub(v1);
+      //         s2.velocity.add(v1).sub(v2);
 
-              const d = (r - Math.sqrt(d2)) / 2;
+      //         const d = (r - Math.sqrt(d2)) / 2;
 
-              s1.collider.center.addScaledVector(normal, d);
-              s2.collider.center.addScaledVector(normal, -d);
-            }
-          }
-        }
-      }
+      //         s1.collider.center.addScaledVector(normal, d);
+      //         s2.collider.center.addScaledVector(normal, -d);
+      //       }
+      //     }
+      //   }
+      // }
 
-      function updateSpheres(deltaTime) {
-        spheres.forEach((sphere) => {
-          sphere.collider.center.addScaledVector(sphere.velocity, deltaTime);
+      // function updateSpheres(deltaTime) {
+      //   spheres.forEach((sphere) => {
+      //     sphere.collider.center.addScaledVector(sphere.velocity, deltaTime);
 
-          const result = worldOctree.sphereIntersect(sphere.collider);
+      //     const result = worldOctree.sphereIntersect(sphere.collider);
 
-          if (result) {
-            sphere.velocity.addScaledVector(
-              result.normal,
-              -result.normal.dot(sphere.velocity) * 1.5
-            );
-            sphere.collider.center.add(
-              result.normal.multiplyScalar(result.depth)
-            );
-          } else {
-            sphere.velocity.y -= GRAVITY * deltaTime;
-          }
+      //     if (result) {
+      //       sphere.velocity.addScaledVector(
+      //         result.normal,
+      //         -result.normal.dot(sphere.velocity) * 1.5
+      //       );
+      //       sphere.collider.center.add(
+      //         result.normal.multiplyScalar(result.depth)
+      //       );
+      //     } else {
+      //       sphere.velocity.y -= GRAVITY * deltaTime;
+      //     }
 
-          const damping = Math.exp(-1.5 * deltaTime) - 1;
-          sphere.velocity.addScaledVector(sphere.velocity, damping);
+      //     const damping = Math.exp(-1.5 * deltaTime) - 1;
+      //     sphere.velocity.addScaledVector(sphere.velocity, damping);
 
-          playerSphereCollision(sphere);
-        });
+      //     playerSphereCollision(sphere);
+      //   });
 
-        spheresCollisions();
+      //   spheresCollisions();
 
-        for (const sphere of spheres) {
-          sphere.mesh.position.copy(sphere.collider.center);
-        }
-      }
+      //   for (const sphere of spheres) {
+      //     sphere.mesh.position.copy(sphere.collider.center);
+      //   }
+      // }
 
       function getForwardVector() {
         camera.getWorldDirection(playerDirection);
@@ -405,27 +424,27 @@
         // gives a bit of air control
         const speedDelta = deltaTime * (playerOnFloor ? 25 : 8);
 
-        if (keyStates["KeyW"]) {
-          playerVelocity.add(getForwardVector().multiplyScalar(speedDelta));
-        }
+        // if (keyStates["KeyW"]) {
+        //   playerVelocity.add(getForwardVector().multiplyScalar(speedDelta));
+        // }
 
-        if (keyStates["KeyS"]) {
-          playerVelocity.add(getForwardVector().multiplyScalar(-speedDelta));
-        }
+        // if (keyStates["KeyS"]) {
+        //   playerVelocity.add(getForwardVector().multiplyScalar(-speedDelta));
+        // }
 
-        if (keyStates["KeyA"]) {
-          playerVelocity.add(getSideVector().multiplyScalar(-speedDelta));
-        }
+        // if (keyStates["KeyA"]) {
+        //   playerVelocity.add(getSideVector().multiplyScalar(-speedDelta));
+        // }
 
-        if (keyStates["KeyD"]) {
-          playerVelocity.add(getSideVector().multiplyScalar(speedDelta));
-        }
+        // if (keyStates["KeyD"]) {
+        //   playerVelocity.add(getSideVector().multiplyScalar(speedDelta));
+        // }
 
-        if (playerOnFloor) {
-          if (keyStates["Space"]) {
-            playerVelocity.y = 15;
-          }
-        }
+        // if (playerOnFloor) {
+        //   if (keyStates["Space"]) {
+        //     playerVelocity.y = 15;
+        //   }
+        // }
 
         if (joystick.right()) {
           //D
@@ -456,6 +475,7 @@
         console.log(gltf.scene);
 
         gltf.scene.scale.set(0.5, 0.5, 0.5);
+        // gltf.scene.position.set(0, 10, 0);
 
         scene.add(gltf.scene);
 
@@ -478,10 +498,10 @@
         // helper.visible = true;
         // scene.add(helper);
 
-        const gui = new GUI({ width: 200 });
-        gui.add({ debug: false }, "debug").onChange(function (value) {
-          helper.visible = value;
-        });
+        // const gui = new GUI({ width: 200 });
+        // gui.add({ debug: false }, "debug").onChange(function (value) {
+        //   helper.visible = value;
+        // });
 
         animate();
       });
@@ -520,7 +540,7 @@
 
           updatePlayer(deltaTime);
 
-          updateSpheres(deltaTime);
+          // updateSpheres(deltaTime);
 
           teleportPlayerIfOob();
         }

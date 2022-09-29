@@ -26,6 +26,10 @@
       </button>
     </div>
 
+    <!-- 按钮。 -->
+    <div id="container"></div>
+
+
     <!-- loading -->
     <!-- <div class="loadingBox">loading</div> -->
 
@@ -82,8 +86,8 @@
     <div class="mainBox">
       <div class="topBox">
         <div class="topL">
-          <span class="guidMode active">导览</span> /
-          <span class="travelMode">探索</span>
+          <span id="guideBtn" class="guideMode active" data-mode="guide">导览</span> /
+          <span id="explorerBtn" class="explorerMode" data-mode="explorer">探索</span>
         </div>
         <div class="topM">赛珍珠文化公园</div>
         <div class="topR">
@@ -217,6 +221,17 @@
 
 		</script>
 
-    <script type="module" src="./index.js"></script>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "./libs/three.module.js"
+        }
+      }
+    </script>
+
+    <script src="./libs/virtualjoystick.js"></script>
+
+    <!-- <script type="module" src="./index.js"></script> -->
+    <script type="module" src="./index copy.js"></script>
   </body>
 </html>
