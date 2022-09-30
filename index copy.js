@@ -104,6 +104,8 @@ let isExplorerMode = false;
 guideModeBtn.addEventListener("click", () => {
   isExplorerMode = false;
 
+  showBtn();
+
   guideModeBtn.classList.add("active");
   explorerBtn.classList.remove("active");
 });
@@ -111,6 +113,7 @@ guideModeBtn.addEventListener("click", () => {
 explorerBtn.addEventListener("click", () => {
   isExplorerMode = true;
 
+  hideBtn();
   guideModeBtn.classList.remove("active");
   explorerBtn.classList.add("active");
 });
@@ -143,8 +146,8 @@ const STEPS_PER_FRAME = 5;
 const worldOctree = new Octree();
 
 const playerCollider = new Capsule(
-  new THREE.Vector3(0, 0.35, 0),
-  new THREE.Vector3(0, 1, 0),
+  new THREE.Vector3(6, 8.5, 23),
+  new THREE.Vector3(6, 10.3, 23),
   0.35
 );
 
@@ -367,6 +370,16 @@ function showUI() {
 function hideUI() {
   topBox.style.top = "-10vh";
   bottomBox.style.bottom = "-10vh";
+  leftBtn.style.left = "-52px";
+  rightBtn.style.right = "-52px";
+}
+
+function showBtn() {
+  leftBtn.style.left = "20px";
+  rightBtn.style.right = "20px";
+}
+
+function hideBtn() {
   leftBtn.style.left = "-52px";
   rightBtn.style.right = "-52px";
 }
