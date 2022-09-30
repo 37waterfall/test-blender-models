@@ -14,7 +14,11 @@ var VirtualJoystick = function (opts) {
   this._useCssTransform =
     opts.useCssTransform !== undefined ? opts.useCssTransform : false;
 
-  this._container.style.position = "relative";
+  // this._container.style.position = "relative";
+  this._container.style.position = "fixed";
+  this._container.style.zIndex = "1";
+  this._container.style.width = "100vw";
+  this._container.style.height = "100vh";
 
   this._container.appendChild(this._baseEl);
   this._baseEl.style.position = "absolute";

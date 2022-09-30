@@ -14,7 +14,11 @@ import { RGBELoader } from "./libs/RGBELoader.js";
 // 所有数据来源。。
 import data from "./libs/data.js";
 
-console.log(data);
+// 物理
+
+import { Octree } from "./libs/Octree.js";
+
+import { Capsule } from "./libs/Capsule.js";
 
 // let gui;
 
@@ -95,13 +99,156 @@ let preInfoBox = document.querySelector(".preInfoBox");
 
 // 模式切换
 
+let isExplorerMode = false;
+
 guideModeBtn.addEventListener("click", () => {
-  controls.enabled = true;
+  isExplorerMode = false;
+
+  guideModeBtn.classList.add("active");
+  explorerBtn.classList.remove("active");
 });
 
 explorerBtn.addEventListener("click", () => {
-  controls.enabled = false;
+  isExplorerMode = true;
+
+  guideModeBtn.classList.remove("active");
+  explorerBtn.classList.add("active");
 });
+
+// joystick
+var joystick = createJoystick();
+
+function createJoystick() {
+  var joystick = new VirtualJoystick({
+    container: document.getElementById("container"),
+    mouseSupport: true,
+    limitStickTravel: true,
+    stickRadius: 50,
+  });
+  joystick.addEventListener("touchStart", function () {
+    console.log("down");
+  });
+  joystick.addEventListener("touchEnd", function () {
+    console.log("up");
+  });
+
+  return joystick;
+}
+
+// const GRAVITY = 30;
+const GRAVITY = 30;
+
+const STEPS_PER_FRAME = 5;
+
+const worldOctree = new Octree();
+
+const playerCollider = new Capsule(
+  new THREE.Vector3(0, 0.35, 0),
+  new THREE.Vector3(0, 1, 0),
+  0.35
+);
+
+// const playerVelocity = new THREE.Vector3();
+const playerVelocity = new THREE.Vector3(6, 9, 23);
+const playerDirection = new THREE.Vector3();
+
+let playerOnFloor = false;
+
+function playerCollisions() {
+  const result = worldOctree.capsuleIntersect(playerCollider);
+
+  playerOnFloor = false;
+
+  if (result) {
+    playerOnFloor = result.normal.y > 0;
+
+    if (!playerOnFloor) {
+      playerVelocity.addScaledVector(
+        result.normal,
+        -result.normal.dot(playerVelocity)
+      );
+    }
+
+    playerCollider.translate(result.normal.multiplyScalar(result.depth));
+  }
+}
+
+function updatePlayer(deltaTime) {
+  let damping = Math.exp(-4 * deltaTime) - 1;
+
+  if (!playerOnFloor) {
+    playerVelocity.y -= GRAVITY * deltaTime;
+
+    // small air resistance
+    damping *= 0.1;
+  }
+
+  playerVelocity.addScaledVector(playerVelocity, damping);
+
+  const deltaPosition = playerVelocity.clone().multiplyScalar(deltaTime);
+  playerCollider.translate(deltaPosition);
+
+  playerCollisions();
+
+  camera.position.copy(playerCollider.end);
+}
+
+function getForwardVector() {
+  camera.getWorldDirection(playerDirection);
+  playerDirection.y = 0;
+  playerDirection.normalize();
+
+  return playerDirection;
+}
+
+function getSideVector() {
+  camera.getWorldDirection(playerDirection);
+  playerDirection.y = 0;
+  playerDirection.normalize();
+  playerDirection.cross(camera.up);
+
+  return playerDirection;
+}
+
+function controlsJoystick(deltaTime) {
+  // gives a bit of air control
+  const speedDelta = deltaTime * (playerOnFloor ? 25 : 8);
+
+  // console.log(joystick);
+
+  if (joystick.right()) {
+    //D
+    // 旋转！？
+    //   playerVelocity.add(getSideVector().multiplyScalar(speedDelta));
+    camera.rotation.y = camera.rotation.y - 60 * speedDelta * 0.001;
+  }
+  if (joystick.left()) {
+    // A
+    //   playerVelocity.add(getSideVector().multiplyScalar(-speedDelta));
+    camera.rotation.y = camera.rotation.y + 60 * speedDelta * 0.001;
+  }
+  if (joystick.up()) {
+    // W
+    playerVelocity.add(getForwardVector().multiplyScalar(speedDelta));
+  }
+  if (joystick.down()) {
+    // S
+    playerVelocity.add(getForwardVector().multiplyScalar(-speedDelta));
+  }
+}
+
+function teleportPlayerIfOob() {
+  if (camera.position.y <= -25) {
+    // 从这里开始！！！！啊啊啊
+    // playerCollider.start.set(0, 0.35, 0);
+    // playerCollider.end.set(0, 1, 0);
+    playerCollider.start.set(6, 8.5, 23);
+    playerCollider.end.set(6, 10.3, 23);
+    playerCollider.radius = 0.35;
+    camera.position.copy(playerCollider.end);
+    camera.rotation.set(0, 0, 0);
+  }
+}
 
 // ---------------
 // btn
@@ -375,7 +522,7 @@ function init() {
     0.1,
     300
   );
-  camera.position.set(10, 5, 20);
+  camera.position.set(6, 10, 9);
 
   scene = new THREE.Scene();
   scene.background = new THREE.Color(0xf2f7ff);
@@ -513,6 +660,10 @@ function init() {
         // });
 
         // gltf.scene.scale.set(0.5, 0.5, 0.5);
+        // gltf.scene.position.set(0, -5, 0);
+
+        // 物理世界
+        worldOctree.fromGraphNode(gltf.scene);
 
         scene.add(gltf.scene);
       });
@@ -558,7 +709,7 @@ function init() {
         item.material = new THREE.MeshBasicMaterial({
           color: "green",
         });
-        item.scale.set(1, 1, 1);
+        // item.scale.set(1, 1, 1);
         item.visible = false;
         const tempText = `
           ${item.name}, 
@@ -566,7 +717,7 @@ function init() {
           y=${item.position.y.toFixed(2)}, 
           z=${item.position.z.toFixed(2)}
         `;
-        createCSS2D(item, tempText, item.position);
+        // createCSS2D(item, tempText, item.position);
 
         curveVector3.push(item.position);
 
@@ -622,9 +773,9 @@ function init() {
   stats.dom.style.position = "absolute";
   stats.dom.style.top = "12vh";
 
-  controls = new OrbitControls(camera, labelRenderer.domElement);
-  controls.minDistance = 0.1;
-  controls.maxDistance = 1000;
+  // controls = new OrbitControls(camera, labelRenderer.domElement);
+  // controls.minDistance = 0.1;
+  // controls.maxDistance = 1000;
   // controls.enableRotate = true; // 开局自动旋转
   // controls.enabled = false;
 
@@ -691,8 +842,6 @@ function moveCamera(moveDirection) {
 }
 
 function animate() {
-  requestAnimationFrame(animate);
-
   // const elapsed = clock.getElapsedTime();
 
   if (flag) {
@@ -701,14 +850,31 @@ function animate() {
 
   stats.update();
 
-  const delta = clock.getDelta();
+  // const delta = clock.getDelta();
 
-  mixer.update(delta);
+  // mixer.update(delta);
 
   // controls.update();
 
+  const deltaTime = Math.min(0.05, clock.getDelta()) / STEPS_PER_FRAME;
+
+  // we look for collisions in substeps to mitigate the risk of
+  // an object traversing another too quickly for detection.
+
+  if (isExplorerMode) {
+    for (let i = 0; i < STEPS_PER_FRAME; i++) {
+      controlsJoystick(deltaTime);
+
+      updatePlayer(deltaTime);
+
+      teleportPlayerIfOob();
+    }
+  }
+
   renderer.render(scene, camera);
-  labelRenderer.render(scene, camera);
+  // labelRenderer.render(scene, camera);
+
+  requestAnimationFrame(animate);
 }
 
 //
