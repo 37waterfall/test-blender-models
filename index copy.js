@@ -395,11 +395,15 @@ function init() {
   // dirLight.position.set(0, 0, 1);
   // scene.add(dirLight);
 
-  const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+  const dirLight = new THREE.DirectionalLight(0xffffff, 2);
   dirLight.color.setHSL(0.1, 1, 0.95);
   dirLight.position.set(-1, 1.75, 1);
   dirLight.position.multiplyScalar(30);
   scene.add(dirLight);
+
+  // const directionalLight2 = new THREE.DirectionalLight(0xffffff, 2);
+  // directionalLight2.position.set(1, 1, 0.5).normalize();
+  // scene.add(directionalLight2);
 
   // SKYDOME
 
@@ -508,7 +512,7 @@ function init() {
         //   item.material.color.setHSL(0.095, 1, 0.75);
         // });
 
-        gltf.scene.scale.set(0.5, 0.5, 0.5);
+        // gltf.scene.scale.set(0.5, 0.5, 0.5);
 
         scene.add(gltf.scene);
       });
@@ -544,7 +548,8 @@ function init() {
 
   // 专门放点的model -> 创建曲线 -> 游览路径！！
   // loader.load("./models/test-curve02.glb", (gltf) => {
-  loader.load("./models/test-curve.glb", (gltf) => {
+  // loader.load("./models/test-curve.glb", (gltf) => {
+  loader.load("./models/test-point02.glb", (gltf) => {
     // 这个缩放还是模型中的好。。。
     // gltf.scene.scale.set(0.5, 0.5, 0.5);
 
@@ -554,7 +559,7 @@ function init() {
           color: "green",
         });
         item.scale.set(1, 1, 1);
-        item.visible = true;
+        item.visible = false;
         const tempText = `
           ${item.name}, 
           x=${item.position.x.toFixed(2)}, 
