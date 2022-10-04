@@ -20,6 +20,8 @@ import { Octree } from "./libs/Octree.js";
 
 import { Capsule } from "./libs/Capsule.js";
 
+import { TWEEN } from "./libs/tween.module.min.js";
+
 // let gui;
 
 let camera,
@@ -38,7 +40,7 @@ let tube,
   haltPoints = [],
   haltIndex = -1;
 
-let wordsArray = [
+const wordsArray = [
   "gc_body",
   "gc_szzSculpture",
   "gc_ddzsSculpture",
@@ -67,13 +69,17 @@ let wordsArray = [
 
 let _time = 0;
 
+// posArray - tween animation
+const posArray = [];
+const lookAtArray = [];
+
 // 状态控制。
 let state = {
   isInit: false, // 是否的首次进入
   isMoving: false, // 是否处于移动中
   language: "ch", // 控制当前选中的语言,对应data数据。
   currentPos: 0, // 当前所处位置
-  travelMode: "guide", // explorer
+  currentMode: "guide", // explorer
 };
 // audio
 let clickAudio = document.querySelector("#clickAudio");
@@ -99,10 +105,8 @@ let preInfoBox = document.querySelector(".preInfoBox");
 
 // 模式切换
 
-let isExplorerMode = false;
-
 guideModeBtn.addEventListener("click", () => {
-  isExplorerMode = false;
+  state.currentMode = "guide";
 
   showBtn();
 
@@ -111,18 +115,20 @@ guideModeBtn.addEventListener("click", () => {
 });
 
 explorerBtn.addEventListener("click", () => {
-  isExplorerMode = true;
+  state.currentMode = "explorer";
 
   hideBtn();
   guideModeBtn.classList.remove("active");
   explorerBtn.classList.add("active");
+
+  setPlayerColliderPos();
 });
 
 // joystick
-var joystick = createJoystick();
+const joystick = createJoystick();
 
 function createJoystick() {
-  var joystick = new VirtualJoystick({
+  const joystick = new VirtualJoystick({
     container: document.getElementById("container"),
     mouseSupport: true,
     limitStickTravel: true,
@@ -145,7 +151,7 @@ const STEPS_PER_FRAME = 5;
 
 const worldOctree = new Octree();
 
-const playerCollider = new Capsule(
+let playerCollider = new Capsule(
   new THREE.Vector3(6, 8.5, 23),
   new THREE.Vector3(6, 10.3, 23),
   0.35
@@ -177,6 +183,7 @@ function playerCollisions() {
 }
 
 function updatePlayer(deltaTime) {
+  deltaTime = 0.002;
   let damping = Math.exp(-4 * deltaTime) - 1;
 
   if (!playerOnFloor) {
@@ -222,12 +229,14 @@ function controlsJoystick(deltaTime) {
   if (joystick.right()) {
     //D
     // 旋转！？
-    //   playerVelocity.add(getSideVector().multiplyScalar(speedDelta));
+    // playerVelocity.add(getSideVector().multiplyScalar(speedDelta));
+    camera.rotation.x = camera.rotation.z = 0;
     camera.rotation.y = camera.rotation.y - 60 * speedDelta * 0.001;
   }
   if (joystick.left()) {
     // A
-    //   playerVelocity.add(getSideVector().multiplyScalar(-speedDelta));
+    // playerVelocity.add(getSideVector().multiplyScalar(-speedDelta));
+    camera.rotation.x = camera.rotation.z = 0;
     camera.rotation.y = camera.rotation.y + 60 * speedDelta * 0.001;
   }
   if (joystick.up()) {
@@ -284,6 +293,25 @@ bottomListBtn.addEventListener("click", (e) => {
 
   // 添加active
   e.target.classList.add("active");
+
+  // 用tweenjs 移动 + setPlayerColliderPos。
+  switch (e.target.dataset.index) {
+    case "0":
+      moveCamera_Tween(4); // 公园综述。
+      break;
+    case "1":
+      moveCamera_Tween(3); // 赛珍珠雕像。
+      break;
+    case "2":
+      moveCamera_Tween(1); // 故居。
+      break;
+    case "3":
+      moveCamera_Tween(2); // 纪念馆。
+      break;
+    case "4":
+      moveCamera_Tween(0); // 大地翰墨
+      break;
+  }
 });
 
 leftBtn.addEventListener("click", () => {
@@ -522,7 +550,7 @@ imgCloseBtn.addEventListener("click", () => {
 //   "Disable All": function () {
 //     camera.layers.disableAll();
 //   },
-// };
+// };300
 
 const clock = new THREE.Clock();
 
@@ -765,6 +793,41 @@ function init() {
     scene.add(tube);
 
     scene.add(gltf.scene);
+
+    // tween - 移动！
+
+    loader.load("./models/tween-points.glb", (gltf) => {
+      scene.add(gltf.scene);
+
+      gltf.scene.traverse((item) => {
+        if (item.name.endsWith("l")) {
+          lookAtArray.push({
+            name: item.name,
+            pos: item.position,
+          });
+        } else {
+          posArray.push({
+            name: item.name,
+            pos: item.position,
+          });
+        }
+
+        item.visible = false;
+      });
+
+      posArray.shift();
+
+      lookAtArray.unshift({
+        name: "pos-top-l",
+        pos: new THREE.Vector3(),
+      });
+
+      // 拍个序
+      posArray.sort((a, b) => a.name.localeCompare(b.name));
+      lookAtArray.sort((a, b) => a.name.localeCompare(b.name));
+
+      console.log(gltf.scene, posArray, lookAtArray);
+    });
   });
 
   // render.
@@ -799,6 +862,46 @@ function init() {
   // 取消gui
   // initGui();
 }
+function moveCamera_Tween(index) {
+  const cameraPos = camera.position;
+
+  const topPos = new THREE.Vector3(4, 56, 19);
+
+  // 移动。。
+
+  const tween1 = new TWEEN.Tween(cameraPos).to(topPos, 1000);
+  const tween2 = new TWEEN.Tween(cameraPos).to(posArray[index].pos, 3000);
+
+  function updateCamera() {
+    camera.lookAt(lookAtArray[index].pos);
+  }
+
+  tween1.chain(tween2);
+
+  tween1.onUpdate(updateCamera);
+  tween2.onUpdate(updateCamera);
+
+  tween2.onComplete(() => {
+    if (state.currentMode === "explorer") {
+      // 修改位置。。+ 方向。。
+
+      setPlayerColliderPos();
+    } else {
+      alert("guide");
+    }
+
+    console.log(camera, playerCollider, state, _time);
+  });
+
+  tween1.start();
+}
+
+function setPlayerColliderPos() {
+  const cameraPos = camera.position;
+
+  playerCollider.start.set(cameraPos.x, cameraPos.y - 1.8, cameraPos.z);
+  playerCollider.end.set(cameraPos.x, cameraPos.y, cameraPos.z);
+}
 
 function updateCamera() {
   // const time = clock.getElapsedTime();
@@ -831,6 +934,11 @@ function updateCamera() {
     // 显示文字 + 文字内容（根据halIndex判断。一个字符串数组，从对象中获取！。）！
     handleWords();
     showWords();
+
+    // 设置探索模式的位置！
+    setPlayerColliderPos();
+
+    console.log(_time);
   }
 
   camera.position.copy(pos);
@@ -874,7 +982,7 @@ function animate() {
   // we look for collisions in substeps to mitigate the risk of
   // an object traversing another too quickly for detection.
 
-  if (isExplorerMode) {
+  if (state.currentMode === "explorer") {
     for (let i = 0; i < STEPS_PER_FRAME; i++) {
       controlsJoystick(deltaTime);
 
@@ -883,6 +991,8 @@ function animate() {
       teleportPlayerIfOob();
     }
   }
+
+  TWEEN.update();
 
   renderer.render(scene, camera);
   // labelRenderer.render(scene, camera);
