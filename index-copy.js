@@ -81,6 +81,9 @@ const wordsArray = [
   "ddhm_body",
 ];
 
+// 打表法 - 记录_time，用于跳转事件。。只需要5个。。
+// const pos_time = []
+
 let _time = 0;
 
 // posArray - tween animation
@@ -337,8 +340,6 @@ leftBtn.addEventListener("click", () => {
   haltIndex %= haltPoints.length;
   moveDirection = "Back";
 
-  debugger;
-
   // 隐藏文字 - 移动中！
   hideWords();
   clickAudio.play();
@@ -478,10 +479,11 @@ function handleWords() {
   detailInfoBody.innerHTML = data[state.language][wordsArray[haltIndex]].info;
   detailHeader.dataset.currentinfo = wordsArray[haltIndex];
 
-  const temp = ["gc_szzSculpture", "gj_body", "jng_body", "ddhm_empty"];
-  if (temp.find((element) => element === wordsArray[haltIndex])) {
-    handleCurrentPos(wordsArray[haltIndex], _time);
-  }
+  // const temp = ["gc_szzSculpture", "gj_body", "jng_body", "ddhm_empty"];
+  // if (temp.find((element) => element === wordsArray[haltIndex])) {
+  //   // 修改到对应的_time...
+  //   handleCurrentPos(wordsArray[haltIndex], _time);
+  // }
 }
 
 // audioBtn + contentAudio内容播放！
@@ -494,7 +496,7 @@ audioBtn.addEventListener("click", (e) => {
 });
 
 // 改变底部按钮的选中状态 + 记录当前的_time ，可以从当前位置移动！
-function handleCurrentPos(currentPos, _time) {}
+// function handleCurrentPos(currentPos, _time) {}
 
 readMoreBtn.addEventListener("click", () => {
   detailInfoBox.style.display = "block";
