@@ -773,17 +773,17 @@ function init() {
   const loader = new GLTFLoader(manager);
 
   // birdAnimation - 丰富画面内容。
-  loader.load("./models/birdAnimation.glb", (gltf) => {
-    const model = gltf.scene;
+  // loader.load("./models/birdAnimation.glb", (gltf) => {
+  //   const model = gltf.scene;
 
-    model.scale.set(3, 3, 3);
-    model.position.set(6, 10, 23);
-    model.rotation.set(0, Math.PI, 0);
-    mixer = new THREE.AnimationMixer(model);
-    mixer.clipAction(gltf.animations[0]).play();
+  //   model.scale.set(3, 3, 3);
+  //   model.position.set(6, 10, 23);
+  //   model.rotation.set(0, Math.PI, 0);
+  //   mixer = new THREE.AnimationMixer(model);
+  //   mixer.clipAction(gltf.animations[0]).play();
 
-    scene.add(gltf.scene);
-  });
+  //   scene.add(gltf.scene);
+  // });
 
   // 专门放点的model -> 创建曲线 -> 游览路径！！
   // loader.load("./models/test-curve02.glb", (gltf) => {
@@ -1018,7 +1018,7 @@ function animate() {
 
   const delta = clock.getDelta();
 
-  mixer.update(delta);
+  // mixer.update(delta);
 
   // controls.update();
 
