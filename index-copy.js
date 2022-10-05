@@ -41,7 +41,7 @@ let tube,
   haltIndex = -1;
 
 const wordsArray = [
-  "gc_body",
+  // "gc_body",
   "gc_szzSculpture",
   "gc_ddzsSculpture",
   "gc_sxb",
@@ -64,7 +64,21 @@ const wordsArray = [
   "jng_rdwxybjc",
   "jng_szzsjysc",
 
-  "ddhm_empty",
+  "jng_book_jrhyy",
+  "jng_book_lz",
+  "jng_book_ny",
+  "jng_book_agz",
+  "jng_book_dmgldgs",
+  "jng_book_zgtk",
+  "jng_zgwrzp",
+  "jng_szzcssy",
+  "jng_szzyjcg",
+  "jng_zgysdgjyr",
+  "jng_qh",
+  "jng_tlh",
+  "jng_jsy",
+
+  "ddhm_body",
 ];
 
 let _time = 0;
@@ -265,7 +279,6 @@ function teleportPlayerIfOob() {
 // ---------------
 // btn
 let leftBtn, rightBtn, enterBtn;
-let flag = false;
 let moveDirection;
 
 let listBtn;
@@ -315,7 +328,11 @@ bottomListBtn.addEventListener("click", (e) => {
 });
 
 leftBtn.addEventListener("click", () => {
-  flag = true;
+  if (state.isMoving) {
+    return;
+  }
+
+  state.isMoving = true;
   haltIndex--;
   haltIndex %= haltPoints.length;
   moveDirection = "Back";
@@ -328,7 +345,12 @@ leftBtn.addEventListener("click", () => {
 });
 
 rightBtn.addEventListener("click", () => {
-  flag = true;
+  if (state.isMoving) {
+    return;
+  }
+
+  state.isMoving = true;
+
   haltIndex++;
   haltIndex %= haltPoints.length;
   moveDirection = "Front";
@@ -415,15 +437,15 @@ function hideBtn() {
 // pageInfo
 
 // 修改文字内容！
-let preHeader = document.querySelector(".preInfoBox .title");
-let preInfoBody = document.querySelector(".preInfoBox .infoBody");
+const preHeader = document.querySelector(".preInfoBox .title");
+const preInfoBody = document.querySelector(".preInfoBox .infoBody");
 // 展示页从右侧出来，和选择语言的一样的位置，也要隐藏按钮
-let readMoreBtn = document.querySelector("#readMoreBtn");
-let detailInfoBox = document.querySelector(".detailInfoBox");
-let detailCloseBtn = document.querySelector(".detailCloseBtn");
+const readMoreBtn = document.querySelector("#readMoreBtn");
+const detailInfoBox = document.querySelector(".detailInfoBox");
+const detailCloseBtn = document.querySelector(".detailCloseBtn");
 
-let detailHeader = document.querySelector(".detailInfoBox .title");
-let detailInfoBody = document.querySelector(".detailInfoBox .infoBody");
+const detailHeader = document.querySelector(".detailInfoBox .title");
+const detailInfoBody = document.querySelector(".detailInfoBox .infoBody");
 
 // 停止的时候显示文字！
 function showWords() {
@@ -448,9 +470,31 @@ function handleWords() {
           : ""
       }`;
 
-  detailHeader.innerText = data[state.language][wordsArray[haltIndex]].header;
+  // 插入音频按钮+音频路径
+  const audioDOM = `<img class="audioImg" data-currentinfo='${wordsArray[haltIndex]}' src="./icons/audio.png" alt="audio" />`;
+
+  detailHeader.innerHTML =
+    data[state.language][wordsArray[haltIndex]].header + audioDOM;
   detailInfoBody.innerHTML = data[state.language][wordsArray[haltIndex]].info;
+  detailHeader.dataset.currentinfo = wordsArray[haltIndex];
+
+  const temp = ["gc_szzSculpture", "gj_body", "jng_body", "ddhm_empty"];
+  if (temp.find((element) => element === wordsArray[haltIndex])) {
+    handleCurrentPos(wordsArray[haltIndex], _time);
+  }
 }
+
+// audioBtn + contentAudio内容播放！
+const audioBtn = document.querySelector("#audioBtn");
+const contentAudio = document.querySelector("#contentAudio");
+audioBtn.addEventListener("click", (e) => {
+  const temp = e.target.dataset.currentinfo;
+  contentAudio.src = `./audio/${temp}.mp3`;
+  contentAudio.play();
+});
+
+// 改变底部按钮的选中状态 + 记录当前的_time ，可以从当前位置移动！
+function handleCurrentPos(currentPos, _time) {}
 
 readMoreBtn.addEventListener("click", () => {
   detailInfoBox.style.display = "block";
@@ -468,6 +512,7 @@ detailCloseBtn.addEventListener("click", () => {
   detailInfoBox.classList.add("animate__animated", "animate__fadeOutRight");
 
   showUI();
+  contentAudio.pause();
 
   detailInfoBox.style.zIndex = 0;
 });
@@ -887,7 +932,6 @@ function moveCamera_Tween(index) {
 
       setPlayerColliderPos();
     } else {
-      alert("guide");
     }
 
     console.log(camera, playerCollider, state, _time);
@@ -928,8 +972,7 @@ function updateCamera() {
     _temp.z > -0.5 &&
     _temp.z < 0.5
   ) {
-    // alert("1");
-    flag = false;
+    state.isMoving = false;
 
     // 显示文字 + 文字内容（根据halIndex判断。一个字符串数组，从对象中获取！。）！
     handleWords();
@@ -938,7 +981,7 @@ function updateCamera() {
     // 设置探索模式的位置！
     setPlayerColliderPos();
 
-    console.log(_time);
+    console.log(_time, wordsArray[haltIndex]);
   }
 
   camera.position.copy(pos);
@@ -965,7 +1008,7 @@ function moveCamera(moveDirection) {
 function animate() {
   // const elapsed = clock.getElapsedTime();
 
-  if (flag) {
+  if (state.isMoving) {
     moveCamera(moveDirection);
   }
 
