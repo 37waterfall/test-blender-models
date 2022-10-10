@@ -439,7 +439,7 @@ function hideBtn() {
 
 // 修改文字内容！
 const preHeader = document.querySelector(".preInfoBox .title");
-const preInfoBody = document.querySelector(".preInfoBox .infoBody");
+// const preInfoBody = document.querySelector(".preInfoBox .infoBody");
 // 展示页从右侧出来，和选择语言的一样的位置，也要隐藏按钮
 const readMoreBtn = document.querySelector("#readMoreBtn");
 const detailInfoBox = document.querySelector(".detailInfoBox");
@@ -462,14 +462,14 @@ function hideWords() {
 function handleWords() {
   // 修改文字内容！preInfoBox + detailInfoBox
   preHeader.innerText = data[state.language][wordsArray[haltIndex]].header;
-  preInfoBody.innerHTML = `${data[state.language][
-    wordsArray[haltIndex]
-  ].info.slice(0, 50)}
-      ${
-        data[state.language][wordsArray[haltIndex]].info.length > 50
-          ? "..."
-          : ""
-      }`;
+  // preInfoBody.innerHTML = `${data[state.language][
+  //   wordsArray[haltIndex]
+  // ].info.slice(0, 50)}
+  //     ${
+  //       data[state.language][wordsArray[haltIndex]].info.length > 50
+  //         ? "..."
+  //         : ""
+  //     }`;
 
   // 插入音频按钮+音频路径
   const audioDOM = `<img class="audioImg" data-currentinfo='${wordsArray[haltIndex]}' src="./icons/audio.png" alt="audio" />`;
@@ -613,8 +613,8 @@ function init() {
   camera.position.set(6, 10, 9);
 
   scene = new THREE.Scene();
-  scene.background = new THREE.Color(0xf2f7ff);
-  scene.fog = new THREE.Fog(0xf2f7ff, 1, 25000);
+  // scene.background = new THREE.Color(0xf2f7ff);
+  scene.fog = new THREE.Fog(0xf2f7ff, 1, 1000);
 
   // light * 3
   // const ambientLight = new THREE.AmbientLight(0xcccccc);
@@ -642,28 +642,28 @@ function init() {
 
   // SKYDOME
 
-  const vertexShader = document.getElementById("vertexShader").textContent;
-  const fragmentShader = document.getElementById("fragmentShader").textContent;
-  const uniforms = {
-    topColor: { value: new THREE.Color(0x0077ff) },
-    bottomColor: { value: new THREE.Color(0xffffff) },
-    offset: { value: 33 },
-    exponent: { value: 0.6 },
-  };
-  uniforms["topColor"].value.copy(hemiLight.color);
+  // const vertexShader = document.getElementById("vertexShader").textContent;
+  // const fragmentShader = document.getElementById("fragmentShader").textContent;
+  // const uniforms = {
+  //   topColor: { value: new THREE.Color(0x0077ff) },
+  //   bottomColor: { value: new THREE.Color(0xffffff) },
+  //   offset: { value: 33 },
+  //   exponent: { value: 0.6 },
+  // };
+  // uniforms["topColor"].value.copy(hemiLight.color);
 
-  scene.fog.color.copy(uniforms["bottomColor"].value);
+  // scene.fog.color.copy(uniforms["bottomColor"].value);
 
-  const skyGeo = new THREE.SphereGeometry(4000, 32, 15);
-  const skyMat = new THREE.ShaderMaterial({
-    uniforms: uniforms,
-    vertexShader: vertexShader,
-    fragmentShader: fragmentShader,
-    side: THREE.BackSide,
-  });
+  // const skyGeo = new THREE.SphereGeometry(4000, 32, 15);
+  // const skyMat = new THREE.ShaderMaterial({
+  //   uniforms: uniforms,
+  //   vertexShader: vertexShader,
+  //   fragmentShader: fragmentShader,
+  //   side: THREE.BackSide,
+  // });
 
-  const sky = new THREE.Mesh(skyGeo, skyMat);
-  scene.add(sky);
+  // const sky = new THREE.Mesh(skyGeo, skyMat);
+  // scene.add(sky);
 
   function createCSS2D(obj, name, pos) {
     const div = document.createElement("div");
@@ -765,25 +765,17 @@ function init() {
 
     // 加载完执行动画！！
 
+
     animate();
+
+
+
   }
 
   // gltf
 
   const loader = new GLTFLoader(manager);
 
-  // birdAnimation - 丰富画面内容。
-  // loader.load("./models/birdAnimation.glb", (gltf) => {
-  //   const model = gltf.scene;
-
-  //   model.scale.set(3, 3, 3);
-  //   model.position.set(6, 10, 23);
-  //   model.rotation.set(0, Math.PI, 0);
-  //   mixer = new THREE.AnimationMixer(model);
-  //   mixer.clipAction(gltf.animations[0]).play();
-
-  //   scene.add(gltf.scene);
-  // });
 
   // 专门放点的model -> 创建曲线 -> 游览路径！！
   // loader.load("./models/test-curve02.glb", (gltf) => {
@@ -879,7 +871,7 @@ function init() {
 
   // render.
 
-  renderer = new THREE.WebGLRenderer();
+  renderer = new THREE.WebGLRenderer({alpha: true});
   renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);

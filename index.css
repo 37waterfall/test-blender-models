@@ -9,6 +9,8 @@ body {
     sans-serif;
 
   overflow: hidden;
+
+  background: url(./imgs/bg-sky.jpg) no-repeat center;
 }
 ul {
   list-style: none;
@@ -458,7 +460,8 @@ ul {
   position: relative;
   display: inline-block;
   margin-bottom: 8px;
-  font-size: 24px;
+  font-size: 2em;
+  color: #fff;
 }
 
 .preInfoBox .title::after {
@@ -472,8 +475,9 @@ ul {
 
 .preInfoBox .infoBodyBox #readMoreBtn {
   margin-left: 8px;
-  border-bottom: 1px solid #fff;
+  /* border-bottom: 1px solid #fff; */
   cursor: pointer;
+  color: #fff;
 }
 
 .preInfoBox .infoBodyBox {
@@ -533,7 +537,7 @@ ul {
 .detailInfoBox .title {
   text-align: left;
   /* margin-top: 60px; */
-  font-size: 60px;
+  font-size: 3em;
   position: relative;
   cursor: pointer;
 }
