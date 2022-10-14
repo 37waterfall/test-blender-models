@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+
+
+    <script type="module">
+        import * as THREE from './libs/three.module.js'
+        import { GLTFLoader } from './libs/GLTFLoader.js'
+        import { OrbitControls } from './libs/OrbitControls.js'
+
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        const geometry = new THREE.BoxGeometry(1, 1, 1);
+        const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+        const cube = new THREE.Mesh(geometry, material);
+        scene.add(cube);
+
+        camera.position.z = 5;
+
+        const state = {
+            isMoving: false
+        }
+        let _time = 0;
+        let haltIndex = -1
+
+
+        let hemiLight, dirLight, dirLight2
+
+        function addLights() {
+            hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.6);
+            hemiLight.color.setHSL(0.6, 1, 0.6);
+            hemiLight.groundColor.setHSL(0.095, 1, 0.75);
+            hemiLight.position.set(0, 50, 0);
+            scene.add(hemiLight);
+
+
+            dirLight = new THREE.DirectionalLight(0xffffff, 1);
+            dirLight.color.setHSL(0.1, 1, 0.95);
+            dirLight.position.set(-30, 52, 30);
+
+            dirLight2 = new THREE.DirectionalLight(0xffffff, 1);
+            dirLight2.color.setHSL(0.1, 1, 0.95);
+            dirLight2.position.set(78, 52, -99);
+
+            scene.add(dirLight);
+
+            scene.add(dirLight2);
+        }
+
+        addLights();
+
+        const models = {
+            basicScene: './models/all-no-materials.glb',
+            curves: './models/curves.glb',
+            imgItems: './models/img-items.glb'
+        }
+
+        const gltfLoader = new GLTFLoader();
+
+        // basicScene
+        gltfLoader.load(models.basicScene, gltf => {
+            scene.add(gltf.scene)
+        })
+        // imgItems
+        gltfLoader.load(models.imgItems, gltf => {
+            scene.add(gltf.scene)
+        })
+
+        // curve
+        const curveVector3 = [], haltPoints = []
+        gltfLoader.load(models.curves, (gltf) => {
+
+            gltf.scene.traverse(item => {
+
+
+                if (item.isMesh && item.name.indexOf("Cone") !== -1) {
+                    item.material = new THREE.MeshBasicMaterial({
+                        color: "green",
+                    });
+                    item.visible = false;
+
+                    curveVector3.push(item.position);
+
+                    if (item.name.endsWith("h")) {
+                        haltPoints.push(item.position);
+
+                        // haltIndex = haltPoints.length - 6;
+                    }
+                }
+
+            })
+
+            scene.add(gltf.scene)
+
+            console.log(scene, curveVector3, haltPoints)
+
+            createCurve();
+
+        })
+
+        let curve, curveArray;
+
+        function createCurve() {
+            {
+                // tube
+
+                curveArray = new THREE.CatmullRomCurve3([...curveVector3]);
+
+                const points = curveArray.getPoints(500);
+                const geometry = new THREE.BufferGeometry().setFromPoints(points);
+
+                const material = new THREE.LineBasicMaterial({ color: 0xff0000 });
+
+                // Create the final object to add to the scene
+                curve = new THREE.Line(geometry, material);
+                // tube.visible = false;
+                scene.add(curve);
+
+            }
+
+        }
+
+        // updateCamera
+
+        function updateCamera() {
+            // const time = clock.getElapsedTime();
+            const time = _time;
+            const looptime = 20;
+            const t = (time % looptime) / looptime;
+            const t2 = ((time + 0.1) % looptime) / looptime;
+
+            const pos = curveArray.getPointAt(t);
+            const pos2 = curveArray.getPointAt(t2);
+
+            // 如果停止的数组没有，需要判空。。
+            const _temp = haltPoints[haltIndex].clone().sub(pos.clone());
+
+            // controls.target = pos.clone();
+
+            // console.log(_temp, haltIndex, controls);
+
+            if (
+                _temp.x > -0.2 &&
+                _temp.x < 0.2 &&
+                _temp.y > -0.2 &&
+                _temp.y < 0.2 &&
+                _temp.z > -0.2 &&
+                _temp.z < 0.2
+            ) {
+                state.isMoving = false;
+
+            }
+
+            camera.position.copy(pos);
+            camera.lookAt(pos2);
+        }
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+
+        window.addEventListener('resize', () => {
+
+            camera.aspect = window.innerWidth / window.innerHeight;
+
+            camera.updateProjectionMatrix();
+
+            renderer.setSize(window.innerWidth, window.innerHeight);
+
+        })
+
+        const STEPS_PRE_FRAME = 5;
+        const clock = new THREE.Clock()
+
+        let dir = true, speed = false;
+
+        window.addEventListener('keydown', (e) => {
+
+            if (e.key === 'w' || e.key === 'W') {
+                state.isMoving = true
+                dir = true;
+                haltIndex = ++haltIndex % haltPoints.length
+            }
+
+            if (e.key === 's' || e.key === 'S') {
+                state.isMoving = true
+                dir = false;
+                haltIndex = --haltIndex % haltPoints.length
+            }
+
+
+            if (e.key === ' ') {
+                speed = !speed
+            }
+
+            console.log(e.key)
+        })
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            if (state.isMoving) {
+                updateCamera()
+                _time += (dir ? 0.01 : -0.01) * (speed ? 5 : 1)
+
+                console.log(haltIndex)
+            }
+
+            const delta = clock.getDelta();
+
+
+            const deltaTime = Math.min(0.05, delta) / STEPS_PRE_FRAME;
+
+            renderer.render(scene, camera);
+        };
+
+        animate();
+
+
+    </script>
+
+</body>
+
+</html>

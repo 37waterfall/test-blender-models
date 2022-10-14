@@ -9,7 +9,9 @@ import { GLTFLoader } from "./libs/GLTFLoader.js";
 
 import Stats from "./libs/stats.module.js";
 
-import { RGBELoader } from "./libs/RGBELoader.js";
+
+import { DRACOLoader } from "./libs/DRACOLoader.js";
+
 
 // 所有数据来源。。
 import data from "./libs/data.js";
@@ -91,7 +93,7 @@ const posArray = [];
 const lookAtArray = [];
 
 // 状态控制。
-let state = {
+const state = {
   isInit: false, // 是否的首次进入
   isMoving: false, // 是否处于移动中
   language: "ch", // 控制当前选中的语言,对应data数据。
@@ -616,29 +618,33 @@ function init() {
   // scene.background = new THREE.Color(0xf2f7ff);
   scene.fog = new THREE.Fog(0xf2f7ff, 1, 1000);
 
-  // light * 3
-  // const ambientLight = new THREE.AmbientLight(0xcccccc);
-  // scene.add(ambientLight);
 
-  const hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.6);
-  hemiLight.color.setHSL(0.6, 1, 0.6);
-  hemiLight.groundColor.setHSL(0.095, 1, 0.75);
-  hemiLight.position.set(0, 50, 0);
-  scene.add(hemiLight);
+  let hemiLight, dirLight, dirLight2
 
-  // const dirLight = new THREE.DirectionalLight(0xffffff, 1);
-  // dirLight.position.set(0, 0, 1);
-  // scene.add(dirLight);
+  function addLights() {
+    hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.6);
+    hemiLight.color.setHSL(0.6, 1, 0.6);
+    hemiLight.groundColor.setHSL(0.095, 1, 0.75);
+    hemiLight.position.set(0, 50, 0);
+    scene.add(hemiLight);
 
-  const dirLight = new THREE.DirectionalLight(0xffffff, 2);
-  dirLight.color.setHSL(0.1, 1, 0.95);
-  dirLight.position.set(-1, 1.75, 1);
-  dirLight.position.multiplyScalar(30);
-  scene.add(dirLight);
 
-  // const directionalLight2 = new THREE.DirectionalLight(0xffffff, 2);
-  // directionalLight2.position.set(1, 1, 0.5).normalize();
-  // scene.add(directionalLight2);
+    dirLight = new THREE.DirectionalLight(0xffffff, 1);
+    dirLight.color.setHSL(0.1, 1, 0.95);
+    dirLight.position.set(-30, 52, 30);
+
+    dirLight2 = new THREE.DirectionalLight(0xffffff, 1);
+    dirLight2.color.setHSL(0.1, 1, 0.95);
+    dirLight2.position.set(78, 52, -99);
+
+    scene.add(dirLight);
+
+    scene.add(dirLight2);
+  }
+
+  addLights();
+
+
 
   // SKYDOME
 
@@ -684,13 +690,13 @@ function init() {
   manager.onLoad = initLoading;
 
   // textureLoader
-  textureLoader = new THREE.TextureLoader(manager);
+  // textureLoader = new THREE.TextureLoader(manager);
 
-  const texutres = {
-    floorMap: {
-      url: "./textures/floor.jpg",
-    },
-  };
+  // const texutres = {
+  //   floorMap: {
+  //     url: "./textures/floor.jpg",
+  //   },
+  // };
 
   // const floorMap = textureLoader.load("./textures/floor.jpg", (texture) => {
   //   texture.wrapS = THREE.RepeatWrapping;
@@ -719,43 +725,30 @@ function init() {
 
   // 加载所有模型 - 材质和模型分离！在加载中上材质！
   const models = {
-    // jng: { url: "./models/buildings/jng.glb" },
-    // gj: { url: "./models/buildings/gj.glb" },
-    // szzyjh: { url: "./models/buildings/szzyjh.glb" },
-    // ddzs: { url: "./models/buildings/ddzs.glb" },
-    // test: { url: "./models/buildings/test.glb" },
 
-    // szzSculpture: { url: "./models/szzSculpture.glb" },
-    test: { url: "./models/test.glb" },
-    // testUv: { url: "./models/test-uv.glb" },
+    szzBuildings: { url: "./models/szz-buildings.glb" },
+    szzItems: { url: "./models/szz-items.glb" },
   };
-  {
-    const gltfLoader = new GLTFLoader(manager);
-    for (const [key, value] of Object.entries(models)) {
-      gltfLoader.load(value.url, (gltf) => {
-        // 这一步是如果有动画的话，可以进一步操作！
-        // model.gltf = gltf;
 
-        // gltf.scene.traverse((item) => {
-        //   item.material = new THREE.MeshBasicMaterial({
-        //     map: floorMap,
-        //   });
-        // });
+  // decompress models.
 
-        // gltf.scene.traverse((item) => {
-        //   item.material = new THREE.MeshLambertMaterial({ color: 0xffffff });
-        //   item.material.color.setHSL(0.095, 1, 0.75);
-        // });
+  const dracoLoader = new DRACOLoader();
+  dracoLoader.setDecoderPath("./libs/draco/gltf/");
 
-        // gltf.scene.scale.set(0.5, 0.5, 0.5);
-        // gltf.scene.position.set(0, -5, 0);
+  const gltfLoader = new GLTFLoader(manager);
 
-        // 物理世界
-        worldOctree.fromGraphNode(gltf.scene);
+  gltfLoader.setDRACOLoader(dracoLoader)
 
-        scene.add(gltf.scene);
-      });
-    }
+  for (const [key, value] of Object.entries(models)) {
+    gltfLoader.load(value.url, (gltf) => {
+      // 这一步是如果有动画的话，可以进一步操作！
+      // model.gltf = gltf;
+
+      // 物理世界
+      worldOctree.fromGraphNode(gltf.scene);
+
+      scene.add(gltf.scene);
+    });
   }
 
   function initLoading() {
@@ -774,13 +767,13 @@ function init() {
 
   // gltf
 
-  const loader = new GLTFLoader(manager);
+  // const loader = new GLTFLoader(manager);
 
 
   // 专门放点的model -> 创建曲线 -> 游览路径！！
   // loader.load("./models/test-curve02.glb", (gltf) => {
   // loader.load("./models/test-curve.glb", (gltf) => {
-  loader.load("./models/test-point02.glb", (gltf) => {
+  gltfLoader.load("./models/test-point02.glb", (gltf) => {
     // 这个缩放还是模型中的好。。。
     // gltf.scene.scale.set(0.5, 0.5, 0.5);
 
@@ -835,8 +828,9 @@ function init() {
 
     // tween - 移动！
 
-    loader.load("./models/tween-points.glb", (gltf) => {
+    gltfLoader.load("./models/tween-points.glb", (gltf) => {
       scene.add(gltf.scene);
+
 
       gltf.scene.traverse((item) => {
         if (item.name.endsWith("l")) {
@@ -871,7 +865,7 @@ function init() {
 
   // render.
 
-  renderer = new THREE.WebGLRenderer({alpha: true});
+  renderer = new THREE.WebGLRenderer({ alpha: true });
   renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
