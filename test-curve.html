@@ -74,6 +74,7 @@
         const models = {
             basicScene: './models/all-no-materials.glb',
             curves: './models/curves.glb',
+            // curvesJng: './models/curves-jng.glb',
             imgItems: './models/img-items.glb'
         }
 
@@ -81,6 +82,7 @@
 
         // basicScene
         gltfLoader.load(models.basicScene, gltf => {
+     
             scene.add(gltf.scene)
         })
         // imgItems
@@ -106,13 +108,13 @@
                     if (item.name.endsWith("h")) {
                         haltPoints.push(item.position);
 
-                        // haltIndex = haltPoints.length - 6;
+                        // haltIndex = haltPoints.length ;
                     }
                 }
 
             })
 
-            scene.add(gltf.scene)
+            scene.add(gltf.scene, haltPoints)
 
             console.log(scene, curveVector3, haltPoints)
 
@@ -221,7 +223,7 @@
 
             if (state.isMoving) {
                 updateCamera()
-                _time += (dir ? 0.01 : -0.01) * (speed ? 5 : 1)
+                _time += (dir ? 0.005 : -0.005) * (speed ? 5 : 1)
 
                 console.log(haltIndex)
             }

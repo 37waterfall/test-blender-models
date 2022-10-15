@@ -1,6 +1,6 @@
 import * as THREE from "./libs/three.module.js";
 
-import { OrbitControls } from "./libs/OrbitControls.js";
+// import { OrbitControls } from "./libs/OrbitControls.js";
 import { CSS2DRenderer, CSS2DObject } from "./libs/CSS2DRenderer.js";
 
 import { GLTFLoader } from "./libs/GLTFLoader.js";
@@ -31,10 +31,10 @@ let camera,
   renderer,
   labelRenderer,
   stats,
-  controls,
-  manager,
-  textureLoader,
-  mixer;
+  // controls,
+  manager;
+  // textureLoader,
+  // mixer;
 
 let tube,
   curve,
@@ -726,8 +726,9 @@ function init() {
   // 加载所有模型 - 材质和模型分离！在加载中上材质！
   const models = {
 
-    szzBuildings: { url: "./models/szz-buildings.glb" },
-    szzItems: { url: "./models/szz-items.glb" },
+    // szzBuildings: { url: "./models/item-buildings-compress.glb" },
+    szzItems: { url: "./models/item-pics-compress.glb" },
+    szzTexts: { url: "./models/item-texts-compress.glb" },
   };
 
   // decompress models.
@@ -744,8 +745,8 @@ function init() {
       // 这一步是如果有动画的话，可以进一步操作！
       // model.gltf = gltf;
 
-      // 物理世界
-      worldOctree.fromGraphNode(gltf.scene);
+      // 物理世界,
+      // worldOctree.fromGraphNode(gltf.scene);
 
       scene.add(gltf.scene);
     });
@@ -761,29 +762,33 @@ function init() {
 
     animate();
 
-
-
   }
 
   // gltf
 
-  // const loader = new GLTFLoader(manager);
+  // building !
+  gltfLoader.load('./models/item-buildings-compress.glb', gltf => {
+
+    // just for buildings !!!,don't add to all of them, it's too slow...
+      worldOctree.fromGraphNode(gltf.scene);
+
+      scene.add(gltf.scene);
+  })
+
 
 
   // 专门放点的model -> 创建曲线 -> 游览路径！！
   // loader.load("./models/test-curve02.glb", (gltf) => {
   // loader.load("./models/test-curve.glb", (gltf) => {
-  gltfLoader.load("./models/test-point02.glb", (gltf) => {
-    // 这个缩放还是模型中的好。。。
-    // gltf.scene.scale.set(0.5, 0.5, 0.5);
-
+  gltfLoader.load("./models/test-curve.glb", (gltf) => {
+ 
     gltf.scene.traverse((item) => {
       if (item.isMesh && item.name.indexOf("Cube") !== -1) {
         item.material = new THREE.MeshBasicMaterial({
           color: "green",
         });
         // item.scale.set(1, 1, 1);
-        item.visible = false;
+        item.visible = true;
         const tempText = `
           ${item.name}, 
           x=${item.position.x.toFixed(2)}, 
@@ -798,19 +803,10 @@ function init() {
           haltPoints.push(item.position);
         }
       }
-
-      // else if (item.name.indexOf("Text") !== -1) {
-      //   item.material = new THREE.MeshBasicMaterial({
-      //     color: "blue",
-      //   });
-      // } else {
-      //   item.material = new THREE.MeshBasicMaterial({
-      //     map: floorMap,
-      //   });
-      // }
+   
     });
 
-    console.log(haltPoints);
+    // console.log(haltPoints);
 
     curve = new THREE.CatmullRomCurve3([...curveVector3]);
 
@@ -859,7 +855,7 @@ function init() {
       posArray.sort((a, b) => a.name.localeCompare(b.name));
       lookAtArray.sort((a, b) => a.name.localeCompare(b.name));
 
-      console.log(gltf.scene, posArray, lookAtArray);
+      // console.log(gltf.scene, posArray, lookAtArray);
     });
   });
 
@@ -922,7 +918,7 @@ function moveCamera_Tween(index) {
     } else {
     }
 
-    console.log(camera, playerCollider, state, _time);
+    // console.log(camera, playerCollider, state, _time);
   });
 
   tween1.start();

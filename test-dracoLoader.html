@@ -11,6 +11,7 @@
       import * as THREE from "./libs/three.module.js";
       import { DRACOLoader } from "./libs/DRACOLoader.js";
       import { GLTFLoader } from "./libs/GLTFLoader.js";
+      import {OrbitControls} from './libs/OrbitControls.js'
 
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(
@@ -38,12 +39,18 @@
 
       loader.setDRACOLoader(dracoLoader);
 
-      loader.load("./models/test-gui-deco.glb", (gltf) => {
+      loader.load("./models/item-texts-compress.glb", (gltf) => {
         gltf.scene.traverse((item) => {
           item.material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+
+
+          console.log(item.position)
         });
+
         scene.add(gltf.scene);
       });
+
+      const controls = new OrbitControls(camera, renderer.domElement)
 
       function animate() {
         requestAnimationFrame(animate);
