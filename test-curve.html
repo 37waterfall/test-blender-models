@@ -82,7 +82,7 @@
 
         // basicScene
         gltfLoader.load(models.basicScene, gltf => {
-     
+
             scene.add(gltf.scene)
         })
         // imgItems
@@ -97,7 +97,7 @@
             gltf.scene.traverse(item => {
 
 
-                if (item.isMesh && item.name.indexOf("Cone") !== -1) {
+                if (item.isMesh && item.name.indexOf("Cylinder") !== -1) {
                     item.material = new THREE.MeshBasicMaterial({
                         color: "green",
                     });
@@ -108,13 +108,13 @@
                     if (item.name.endsWith("h")) {
                         haltPoints.push(item.position);
 
-                        // haltIndex = haltPoints.length ;
+                        // haltIndex = haltPoints.length - 2;
                     }
                 }
 
             })
 
-            scene.add(gltf.scene, haltPoints)
+            scene.add(gltf.scene)
 
             console.log(scene, curveVector3, haltPoints)
 
@@ -130,7 +130,7 @@
 
                 curveArray = new THREE.CatmullRomCurve3([...curveVector3]);
 
-                const points = curveArray.getPoints(500);
+                const points = curveArray.getPoints(5000);
                 const geometry = new THREE.BufferGeometry().setFromPoints(points);
 
                 const material = new THREE.LineBasicMaterial({ color: 0xff0000 });
@@ -149,7 +149,8 @@
         function updateCamera() {
             // const time = clock.getElapsedTime();
             const time = _time;
-            const looptime = 20;
+            // const looptime = 20;
+            const looptime = 200;
             const t = (time % looptime) / looptime;
             const t2 = ((time + 0.1) % looptime) / looptime;
 

@@ -1,7 +1,7 @@
 import * as THREE from "./libs/three.module.js";
 
 // import { OrbitControls } from "./libs/OrbitControls.js";
-import { CSS2DRenderer, CSS2DObject } from "./libs/CSS2DRenderer.js";
+// import { CSS2DRenderer, CSS2DObject } from "./libs/CSS2DRenderer.js";
 
 import { GLTFLoader } from "./libs/GLTFLoader.js";
 
@@ -49,10 +49,12 @@ const wordsArray = [
   "gc_sxb",
   "gc_zzsw",
 
+  'ddhm_body',
+
   "gj_body",
   "gj_ddgg",
-  "gj_sz",
   "gj_sg",
+  "gj_sz",
 
   "jng_body",
   "jng_szzxx",
@@ -61,26 +63,34 @@ const wordsArray = [
   "jng_nksyl",
   "jng_szzyl",
   "jng_szzjzxqpxb",
-  "jng_kxsxx",
-  "jng_wmxx",
-  "jng_rdwxybjc",
+  'jng_xx',
+
+  // "jng_kxsxx",
+  // "jng_wmxx",
+  // "jng_rdwxybjc",
+
   "jng_szzsjysc",
 
-  "jng_book_jrhyy",
-  "jng_book_lz",
-  "jng_book_ny",
-  "jng_book_agz",
-  "jng_book_dmgldgs",
-  "jng_book_zgtk",
+  'jng_book',
+
+  // "jng_book_jrhyy",
+  // "jng_book_lz",
+  // "jng_book_ny",
+  // "jng_book_agz",
+  // "jng_book_dmgldgs",
+  // "jng_book_zgtk",
   "jng_zgwrzp",
   "jng_szzcssy",
   "jng_szzyjcg",
   "jng_zgysdgjyr",
-  "jng_qh",
-  "jng_tlh",
+
+  'jng_qhtlh',
+
+  // "jng_qh",
+  // "jng_tlh",
   "jng_jsy",
 
-  "ddhm_body",
+  // "ddhm_body",
 ];
 
 // 打表法 - 记录_time，用于跳转事件。。只需要5个。。
@@ -726,7 +736,7 @@ function init() {
   // 加载所有模型 - 材质和模型分离！在加载中上材质！
   const models = {
 
-    // szzBuildings: { url: "./models/item-buildings-compress.glb" },
+    szzBuildings: { url: "./models/item-buildings-compress.glb" },
     szzItems: { url: "./models/item-pics-compress.glb" },
     szzTexts: { url: "./models/item-texts-compress.glb" },
   };
@@ -780,21 +790,21 @@ function init() {
   // 专门放点的model -> 创建曲线 -> 游览路径！！
   // loader.load("./models/test-curve02.glb", (gltf) => {
   // loader.load("./models/test-curve.glb", (gltf) => {
-  gltfLoader.load("./models/test-curve.glb", (gltf) => {
+  gltfLoader.load("./models/curves.glb", (gltf) => {
  
     gltf.scene.traverse((item) => {
-      if (item.isMesh && item.name.indexOf("Cube") !== -1) {
+      if (item.isMesh && item.name.indexOf("Cylinder") !== -1) {
         item.material = new THREE.MeshBasicMaterial({
           color: "green",
         });
         // item.scale.set(1, 1, 1);
-        item.visible = true;
-        const tempText = `
-          ${item.name}, 
-          x=${item.position.x.toFixed(2)}, 
-          y=${item.position.y.toFixed(2)}, 
-          z=${item.position.z.toFixed(2)}
-        `;
+        item.visible = false;
+        // const tempText = `
+        //   ${item.name}, 
+        //   x=${item.position.x.toFixed(2)}, 
+        //   y=${item.position.y.toFixed(2)}, 
+        //   z=${item.position.z.toFixed(2)}
+        // `;
         // createCSS2D(item, tempText, item.position);
 
         curveVector3.push(item.position);
@@ -810,7 +820,7 @@ function init() {
 
     curve = new THREE.CatmullRomCurve3([...curveVector3]);
 
-    const points = curve.getPoints(50);
+    const points = curve.getPoints(500);
     const geometry = new THREE.BufferGeometry().setFromPoints(points);
 
     const material = new THREE.LineBasicMaterial({ color: 0xff0000 });
@@ -866,11 +876,11 @@ function init() {
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
 
-  labelRenderer = new CSS2DRenderer();
-  labelRenderer.setSize(window.innerWidth, window.innerHeight);
-  labelRenderer.domElement.style.position = "absolute";
-  labelRenderer.domElement.style.top = "0px";
-  document.body.appendChild(labelRenderer.domElement);
+  // labelRenderer = new CSS2DRenderer();
+  // labelRenderer.setSize(window.innerWidth, window.innerHeight);
+  // labelRenderer.domElement.style.position = "absolute";
+  // labelRenderer.domElement.style.top = "0px";
+  // document.body.appendChild(labelRenderer.domElement);
 
   stats = new Stats();
   document.body.appendChild(stats.dom);
@@ -934,7 +944,7 @@ function setPlayerColliderPos() {
 function updateCamera() {
   // const time = clock.getElapsedTime();
   const time = _time;
-  const looptime = 20;
+  const looptime = 200;
   const t = (time % looptime) / looptime;
   const t2 = ((time + 0.1) % looptime) / looptime;
 
@@ -949,12 +959,12 @@ function updateCamera() {
   // console.log(_temp, haltIndex, controls);
 
   if (
-    _temp.x > -0.5 &&
-    _temp.x < 0.5 &&
-    _temp.y > -0.5 &&
-    _temp.y < 0.5 &&
-    _temp.z > -0.5 &&
-    _temp.z < 0.5
+    _temp.x > -0.2 &&
+    _temp.x < 0.2 &&
+    _temp.y > -0.2 &&
+    _temp.y < 0.2 &&
+    _temp.z > -0.2 &&
+    _temp.z < 0.2
   ) {
     state.isMoving = false;
 
@@ -979,14 +989,15 @@ function onWindowResize() {
 
   renderer.setSize(window.innerWidth, window.innerHeight);
 
-  labelRenderer.setSize(window.innerWidth, window.innerHeight);
+  // labelRenderer.setSize(window.innerWidth, window.innerHeight);
 }
 
 function moveCamera(moveDirection) {
   // console.log(_time);
 
   updateCamera();
-  _time += moveDirection === "Front" ? 0.01 : -0.01;
+  _time += (moveDirection === "Front" ? 0.01 : -0.01) * 5;
+
 }
 
 function animate() {
