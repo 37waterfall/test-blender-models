@@ -30,7 +30,7 @@ const data = {
     },
     gc_ddzsSculpture: {
       header: "“大地”之书雕塑",
-      info: `纪念赛珍珠获诺贝尔文学奖的文学代表作《大地》`,
+      info: `汉白玉制作,纪念赛珍珠获诺贝尔文学奖的文学代表作《大地》`,
       imgPath: "",
       audioPath: "",
     },
