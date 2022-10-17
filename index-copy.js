@@ -7,7 +7,7 @@ import { GLTFLoader } from "./libs/GLTFLoader.js";
 
 // import { GUI } from "./libs/lil-gui.module.min.js";
 
-import Stats from "./libs/stats.module.js";
+// import Stats from "./libs/stats.module.js";
 
 
 import { DRACOLoader } from "./libs/DRACOLoader.js";
@@ -30,7 +30,7 @@ let camera,
   scene,
   renderer,
   labelRenderer,
-  stats,
+  // stats,
   // controls,
   manager;
   // textureLoader,
@@ -43,7 +43,7 @@ let tube,
   haltIndex = -1;
 
 const wordsArray = [
-  // "gc_body",
+  "gc_body",
   "gc_szzSculpture",
   "gc_ddzsSculpture",
   "gc_sxb",
@@ -54,31 +54,20 @@ const wordsArray = [
   "gj_body",
   "gj_ddgg",
   "gj_sg",
-  "gj_sz",
 
   "jng_body",
   "jng_szzxx",
-  "jng_ddzt",
   "jng_szzxjk",
   "jng_nksyl",
   "jng_szzyl",
   "jng_szzjzxqpxb",
   'jng_xx',
 
-  // "jng_kxsxx",
-  // "jng_wmxx",
-  // "jng_rdwxybjc",
+  "jng_szzbjc",
 
-  "jng_szzsjysc",
+  'jng_books',
 
-  'jng_book',
 
-  // "jng_book_jrhyy",
-  // "jng_book_lz",
-  // "jng_book_ny",
-  // "jng_book_agz",
-  // "jng_book_dmgldgs",
-  // "jng_book_zgtk",
   "jng_zgwrzp",
   "jng_szzcssy",
   "jng_szzyjcg",
@@ -86,11 +75,9 @@ const wordsArray = [
 
   'jng_qhtlh',
 
-  // "jng_qh",
-  // "jng_tlh",
+
   "jng_jsy",
 
-  // "ddhm_body",
 ];
 
 // 打表法 - 记录_time，用于跳转事件。。只需要5个。。
@@ -532,65 +519,65 @@ detailCloseBtn.addEventListener("click", () => {
 });
 
 // videoPageInfo
-// 在detailInfoBox里的按钮。。
-let videoBoxBtn = document.querySelector("#videoBoxBtn");
+// 在detailInfoBox里的按钮。。 视频模态框
+// let videoBoxBtn = document.querySelector("#videoBoxBtn");
 
-let videoPageBox = document.querySelector(".videoPageBox");
-let videoCloseBtn = document.querySelector("#videoCloseBtn");
-let videoContent = document.querySelector("#videoContent");
+// let videoPageBox = document.querySelector(".videoPageBox");
+// let videoCloseBtn = document.querySelector("#videoCloseBtn");
+// let videoContent = document.querySelector("#videoContent");
 
-videoBoxBtn.addEventListener("click", () => {
-  videoPageBox.style.opacity = 1;
-  videoPageBox.style.zIndex = 11;
+// videoBoxBtn.addEventListener("click", () => {
+//   videoPageBox.style.opacity = 1;
+//   videoPageBox.style.zIndex = 11;
 
-  // 需要从网络获取video。。
+//   // 需要从网络获取video。。
 
-  videoContent.src = "./video/test-video.mp4";
-  videoContent.play();
+//   videoContent.src = "./video/test-video.mp4";
+//   videoContent.play();
 
-  videoPageBox.classList.remove("animate__animated", "animate__fadeOutUp");
-  videoPageBox.classList.add("animate__animated", "animate__fadeInDown");
+//   videoPageBox.classList.remove("animate__animated", "animate__fadeOutUp");
+//   videoPageBox.classList.add("animate__animated", "animate__fadeInDown");
 
-  hideUI();
-});
+//   hideUI();
+// });
 
-videoCloseBtn.addEventListener("click", () => {
-  videoPageBox.classList.remove("animate__animated", "animate__fadeInDown");
-  videoPageBox.classList.add("animate__animated", "animate__fadeOutUp");
+// videoCloseBtn.addEventListener("click", () => {
+//   videoPageBox.classList.remove("animate__animated", "animate__fadeInDown");
+//   videoPageBox.classList.add("animate__animated", "animate__fadeOutUp");
 
-  // 停止播放视频！
-  videoContent.pause();
+//   // 停止播放视频！
+//   videoContent.pause();
 
-  // showUI();
-});
+//   // showUI();
+// });
 
-// imgPageBox
+// imgPageBox - 图片 模态框
 
-let imgBoxBtn = document.querySelector("#imgBoxBtn");
+// let imgBoxBtn = document.querySelector("#imgBoxBtn");
 
-let imgPageBox = document.querySelector(".imgPageBox");
-let imgCloseBtn = document.querySelector("#imgCloseBtn");
-let imgContent = document.querySelector("#imgContent");
+// let imgPageBox = document.querySelector(".imgPageBox");
+// let imgCloseBtn = document.querySelector("#imgCloseBtn");
+// let imgContent = document.querySelector("#imgContent");
 
-imgBoxBtn.addEventListener("click", () => {
-  imgPageBox.style.opacity = 1;
-  imgPageBox.style.zIndex = 11;
+// imgBoxBtn.addEventListener("click", () => {
+//   imgPageBox.style.opacity = 1;
+//   imgPageBox.style.zIndex = 11;
 
-  // 需要从网络获取img。。
-  imgContent.src = "./imgs/test-img.jpg";
+//   // 需要从网络获取img。。
+//   imgContent.src = "./imgs/test-img.jpg";
 
-  imgPageBox.classList.remove("animate__animated", "animate__fadeOutUp");
-  imgPageBox.classList.add("animate__animated", "animate__fadeInDown");
+//   imgPageBox.classList.remove("animate__animated", "animate__fadeOutUp");
+//   imgPageBox.classList.add("animate__animated", "animate__fadeInDown");
 
-  hideUI();
-});
+//   hideUI();
+// });
 
-imgCloseBtn.addEventListener("click", () => {
-  imgPageBox.classList.remove("animate__animated", "animate__fadeInDown");
-  imgPageBox.classList.add("animate__animated", "animate__fadeOutUp");
+// imgCloseBtn.addEventListener("click", () => {
+//   imgPageBox.classList.remove("animate__animated", "animate__fadeInDown");
+//   imgPageBox.classList.add("animate__animated", "animate__fadeOutUp");
 
-  // showUI();
-});
+//   // showUI();
+// });
 
 // ---------------
 // ----
@@ -736,7 +723,7 @@ function init() {
   // 加载所有模型 - 材质和模型分离！在加载中上材质！
   const models = {
 
-    szzBuildings: { url: "./models/item-buildings-compress.glb" },
+    // szzBuildings: { url: "./models/item-buildings-compress.glb" },
     szzItems: { url: "./models/item-pics-compress.glb" },
     szzTexts: { url: "./models/item-texts-compress.glb" },
   };
@@ -788,24 +775,14 @@ function init() {
 
 
   // 专门放点的model -> 创建曲线 -> 游览路径！！
-  // loader.load("./models/test-curve02.glb", (gltf) => {
-  // loader.load("./models/test-curve.glb", (gltf) => {
   gltfLoader.load("./models/curves.glb", (gltf) => {
  
     gltf.scene.traverse((item) => {
-      if (item.isMesh && item.name.indexOf("Cylinder") !== -1) {
-        item.material = new THREE.MeshBasicMaterial({
-          color: "green",
-        });
-        // item.scale.set(1, 1, 1);
+      if (item.isMesh && item.name.indexOf("Plane") !== -1) {
+        // item.material = new THREE.MeshBasicMaterial({
+        //   color: "green",
+        // });
         item.visible = false;
-        // const tempText = `
-        //   ${item.name}, 
-        //   x=${item.position.x.toFixed(2)}, 
-        //   y=${item.position.y.toFixed(2)}, 
-        //   z=${item.position.z.toFixed(2)}
-        // `;
-        // createCSS2D(item, tempText, item.position);
 
         curveVector3.push(item.position);
 
@@ -827,7 +804,7 @@ function init() {
 
     // Create the final object to add to the scene
     tube = new THREE.Line(geometry, material);
-    // tube.visible = false;
+    tube.visible = false;
     scene.add(tube);
 
     scene.add(gltf.scene);
@@ -882,11 +859,11 @@ function init() {
   // labelRenderer.domElement.style.top = "0px";
   // document.body.appendChild(labelRenderer.domElement);
 
-  stats = new Stats();
-  document.body.appendChild(stats.dom);
+  // stats = new Stats();
+  // document.body.appendChild(stats.dom);
 
-  stats.dom.style.position = "absolute";
-  stats.dom.style.top = "12vh";
+  // stats.dom.style.position = "absolute";
+  // stats.dom.style.top = "12vh";
 
   // controls = new OrbitControls(camera, labelRenderer.domElement);
   // controls.minDistance = 0.1;
@@ -1007,7 +984,7 @@ function animate() {
     moveCamera(moveDirection);
   }
 
-  stats.update();
+  // stats.update();
 
   const delta = clock.getDelta();
 

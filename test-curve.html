@@ -23,6 +23,8 @@
         import * as THREE from './libs/three.module.js'
         import { GLTFLoader } from './libs/GLTFLoader.js'
         import { OrbitControls } from './libs/OrbitControls.js'
+        import { DRACOLoader } from "./libs/DRACOLoader.js";
+
 
 
         const scene = new THREE.Scene();
@@ -78,7 +80,14 @@
             imgItems: './models/img-items.glb'
         }
 
+
+        // decompress models.
+
+        const dracoLoader = new DRACOLoader();
+        dracoLoader.setDecoderPath("./libs/draco/gltf/");
+
         const gltfLoader = new GLTFLoader();
+        gltfLoader.setDRACOLoader(dracoLoader)
 
         // basicScene
         gltfLoader.load(models.basicScene, gltf => {
@@ -97,7 +106,7 @@
             gltf.scene.traverse(item => {
 
 
-                if (item.isMesh && item.name.indexOf("Cylinder") !== -1) {
+                if (item.isMesh && item.name.indexOf("Plane") !== -1) {
                     item.material = new THREE.MeshBasicMaterial({
                         color: "green",
                     });
@@ -224,7 +233,7 @@
 
             if (state.isMoving) {
                 updateCamera()
-                _time += (dir ? 0.005 : -0.005) * (speed ? 5 : 1)
+                _time += (dir ? 0.01 : -0.01) * (speed ? 5 : 1)
 
                 console.log(haltIndex)
             }
