@@ -33,8 +33,8 @@ let camera,
   // stats,
   // controls,
   manager;
-  // textureLoader,
-  // mixer;
+// textureLoader,
+// mixer;
 
 let tube,
   curve,
@@ -334,6 +334,12 @@ leftBtn.addEventListener("click", () => {
     return;
   }
 
+  // 如果是第一个位置，就禁止点击。。
+  if (haltIndex === 0) {
+    return;
+  }
+
+
   state.isMoving = true;
   haltIndex--;
   haltIndex %= haltPoints.length;
@@ -365,6 +371,24 @@ enterBtn.addEventListener("click", () => {
   homeBox.classList.add("animate__animated", "animate__fadeOutRight");
 
   showUI();
+
+  // 如果是导览模式
+  if (state.currentMode === 'guide') {
+    showBtn()
+  } else {
+    hideBtn()
+  }
+
+  // 如果是第一次进入，移动到第一个位置上！
+  if (!state.isInit) {
+    state.isInit = true;
+    state.isMoving = true;
+
+    haltIndex++;
+    haltIndex %= haltPoints.length;
+    moveDirection = "Front";
+  }
+
 
   homeBox.style.zIndex = 0;
 });
@@ -607,9 +631,9 @@ function init() {
     45,
     window.innerWidth / window.innerHeight,
     0.1,
-    300
+    500
   );
-  camera.position.set(6, 10, 9);
+  camera.position.set(4, 15, 67);
 
   scene = new THREE.Scene();
   // scene.background = new THREE.Color(0xf2f7ff);
@@ -756,6 +780,7 @@ function init() {
 
     // 加载完执行动画！！
 
+    hideWords()
 
     animate();
 
@@ -767,16 +792,16 @@ function init() {
   gltfLoader.load('./models/item-buildings-compress.glb', gltf => {
 
     // just for buildings !!!,don't add to all of them, it's too slow...
-      worldOctree.fromGraphNode(gltf.scene);
+    worldOctree.fromGraphNode(gltf.scene);
 
-      scene.add(gltf.scene);
+    scene.add(gltf.scene);
   })
 
 
 
   // 专门放点的model -> 创建曲线 -> 游览路径！！
   gltfLoader.load("./models/curves.glb", (gltf) => {
- 
+
     gltf.scene.traverse((item) => {
       if (item.isMesh && item.name.indexOf("Plane") !== -1) {
         // item.material = new THREE.MeshBasicMaterial({
@@ -790,7 +815,7 @@ function init() {
           haltPoints.push(item.position);
         }
       }
-   
+
     });
 
     // console.log(haltPoints);
@@ -833,10 +858,10 @@ function init() {
 
       posArray.shift();
 
-      lookAtArray.unshift({
-        name: "pos-top-l",
-        pos: new THREE.Vector3(),
-      });
+      // lookAtArray.unshift({
+      //   name: "pos-top-l",
+      //   pos: new THREE.Vector3(),
+      // });
 
       // 拍个序
       posArray.sort((a, b) => a.name.localeCompare(b.name));
@@ -853,32 +878,20 @@ function init() {
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
 
-  // labelRenderer = new CSS2DRenderer();
-  // labelRenderer.setSize(window.innerWidth, window.innerHeight);
-  // labelRenderer.domElement.style.position = "absolute";
-  // labelRenderer.domElement.style.top = "0px";
-  // document.body.appendChild(labelRenderer.domElement);
-
-  // stats = new Stats();
-  // document.body.appendChild(stats.dom);
-
-  // stats.dom.style.position = "absolute";
-  // stats.dom.style.top = "12vh";
-
-  // controls = new OrbitControls(camera, labelRenderer.domElement);
-  // controls.minDistance = 0.1;
-  // controls.maxDistance = 1000;
-  // controls.enableRotate = true; // 开局自动旋转
-  // controls.enabled = false;
-
-  //
 
   window.addEventListener("resize", onWindowResize);
 
   // 取消gui
   // initGui();
+
+
 }
 function moveCamera_Tween(index) {
+
+  if (state.isMoving) {
+    return
+  }
+
   const cameraPos = camera.position;
 
   const topPos = new THREE.Vector3(4, 56, 19);
@@ -973,7 +986,7 @@ function moveCamera(moveDirection) {
   // console.log(_time);
 
   updateCamera();
-  _time += (moveDirection === "Front" ? 0.01 : -0.01) * 5;
+  _time += (moveDirection === "Front" ? 0.01 : -0.01) * 4;
 
 }
 
