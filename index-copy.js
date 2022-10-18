@@ -122,20 +122,43 @@ let preInfoBox = document.querySelector(".preInfoBox");
 // 模式切换
 
 guideModeBtn.addEventListener("click", () => {
+
+  if(state.isMoving) return
+
   state.currentMode = "guide";
 
   showBtn();
 
   guideModeBtn.classList.add("active");
   explorerBtn.classList.remove("active");
+
+  hideWords();
+  setTimeout(() => {
+    showWords();
+    handleWords(haltIndex)
+
+  }, 500)
+
+
 });
 
 explorerBtn.addEventListener("click", () => {
+
+  if(state.isMoving) return
+
   state.currentMode = "explorer";
 
   hideBtn();
   guideModeBtn.classList.remove("active");
   explorerBtn.classList.add("active");
+
+  // 显示赛珍珠文化公园文字
+
+  hideWords();
+  setTimeout(() => {
+    showWords();
+    handleWords(0)
+  }, 500)
 
   setPlayerColliderPos();
 });
@@ -298,6 +321,9 @@ listBtn = document.querySelector("#listBtn");
 bottomListBtn = document.querySelector("#bottomList");
 bottomItemList = document.querySelectorAll(".bottomItem");
 bottomListBtn.addEventListener("click", (e) => {
+
+  if(state.isMoving) return;
+
   // 通过data属性方法是哪一个！！不用管中英文！
   // console.log(e.target.dataset.index);
 
@@ -482,7 +508,7 @@ function hideWords() {
   preInfoBox.classList.add("animate__animated", "animate__fadeOutLeft");
 }
 
-function handleWords() {
+function handleWords(haltIndex) {
   // 修改文字内容！preInfoBox + detailInfoBox
   preHeader.innerText = data[state.language][wordsArray[haltIndex]].header;
   // preInfoBody.innerHTML = `${data[state.language][
@@ -959,7 +985,7 @@ function updateCamera() {
     state.isMoving = false;
 
     // 显示文字 + 文字内容（根据halIndex判断。一个字符串数组，从对象中获取！。）！
-    handleWords();
+    handleWords(haltIndex);
     showWords();
 
     // 设置探索模式的位置！
