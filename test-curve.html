@@ -92,6 +92,18 @@
         // basicScene
         gltfLoader.load(models.basicScene, gltf => {
 
+            gltf.scene.traverse(item => {
+                if (item.isMesh) {
+                    item.material = new THREE.MeshBasicMaterial({
+                        wireframe: true,
+                        color: 0x899da9,
+                        opacity: .12,
+                        transparent: true,
+                        
+                    });
+                }
+            })
+
             scene.add(gltf.scene)
         })
         // imgItems

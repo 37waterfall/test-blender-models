@@ -9,9 +9,7 @@ import { GLTFLoader } from "./libs/GLTFLoader.js";
 
 // import Stats from "./libs/stats.module.js";
 
-
 import { DRACOLoader } from "./libs/DRACOLoader.js";
-
 
 // 所有数据来源。。
 import data from "./libs/data.js";
@@ -49,7 +47,7 @@ const wordsArray = [
   "gc_sxb",
   "gc_zzsw",
 
-  'ddhm_body',
+  "ddhm_body",
 
   "gj_body",
   "gj_ddgg",
@@ -61,23 +59,20 @@ const wordsArray = [
   "jng_nksyl",
   "jng_szzyl",
   "jng_szzjzxqpxb",
-  'jng_xx',
+  "jng_xx",
 
   "jng_szzbjc",
 
-  'jng_books',
-
+  "jng_books",
 
   "jng_zgwrzp",
   "jng_szzcssy",
   "jng_szzyjcg",
   "jng_zgysdgjyr",
 
-  'jng_qhtlh',
-
+  "jng_qhtlh",
 
   "jng_jsy",
-
 ];
 
 // 打表法 - 记录_time，用于跳转事件。。只需要5个。。
@@ -122,8 +117,7 @@ let preInfoBox = document.querySelector(".preInfoBox");
 // 模式切换
 
 guideModeBtn.addEventListener("click", () => {
-
-  if(state.isMoving) return
+  if (state.isMoving) return;
 
   state.currentMode = "guide";
 
@@ -135,16 +129,12 @@ guideModeBtn.addEventListener("click", () => {
   hideWords();
   setTimeout(() => {
     showWords();
-    handleWords(haltIndex)
-
-  }, 500)
-
-
+    handleWords(haltIndex);
+  }, 500);
 });
 
 explorerBtn.addEventListener("click", () => {
-
-  if(state.isMoving) return
+  if (state.isMoving) return;
 
   state.currentMode = "explorer";
 
@@ -157,8 +147,8 @@ explorerBtn.addEventListener("click", () => {
   hideWords();
   setTimeout(() => {
     showWords();
-    handleWords(0)
-  }, 500)
+    handleWords(0);
+  }, 500);
 
   setPlayerColliderPos();
 });
@@ -321,8 +311,7 @@ listBtn = document.querySelector("#listBtn");
 bottomListBtn = document.querySelector("#bottomList");
 bottomItemList = document.querySelectorAll(".bottomItem");
 bottomListBtn.addEventListener("click", (e) => {
-
-  if(state.isMoving) return;
+  if (state.isMoving) return;
 
   // 通过data属性方法是哪一个！！不用管中英文！
   // console.log(e.target.dataset.index);
@@ -365,7 +354,6 @@ leftBtn.addEventListener("click", () => {
     return;
   }
 
-
   state.isMoving = true;
   haltIndex--;
   haltIndex %= haltPoints.length;
@@ -399,10 +387,10 @@ enterBtn.addEventListener("click", () => {
   showUI();
 
   // 如果是导览模式
-  if (state.currentMode === 'guide') {
-    showBtn()
+  if (state.currentMode === "guide") {
+    showBtn();
   } else {
-    hideBtn()
+    hideBtn();
   }
 
   // 如果是第一次进入，移动到第一个位置上！
@@ -414,7 +402,6 @@ enterBtn.addEventListener("click", () => {
     haltIndex %= haltPoints.length;
     moveDirection = "Front";
   }
-
 
   homeBox.style.zIndex = 0;
 });
@@ -665,8 +652,7 @@ function init() {
   // scene.background = new THREE.Color(0xf2f7ff);
   scene.fog = new THREE.Fog(0xf2f7ff, 1, 1000);
 
-
-  let hemiLight, dirLight, dirLight2
+  let hemiLight, dirLight, dirLight2;
 
   function addLights() {
     hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.6);
@@ -674,7 +660,6 @@ function init() {
     hemiLight.groundColor.setHSL(0.095, 1, 0.75);
     hemiLight.position.set(0, 50, 0);
     scene.add(hemiLight);
-
 
     dirLight = new THREE.DirectionalLight(0xffffff, 1);
     dirLight.color.setHSL(0.1, 1, 0.95);
@@ -690,8 +675,6 @@ function init() {
   }
 
   addLights();
-
-
 
   // SKYDOME
 
@@ -770,12 +753,14 @@ function init() {
     console.log((itemsLoaded / itemsTotal) * 100, url);
   };
 
+  const cdnUrl =
+    "https://cdn.jsdelivr.net/gh/37waterfall/test-blender-models@master";
   // 加载所有模型 - 材质和模型分离！在加载中上材质！
   const models = {
-
     // szzBuildings: { url: "./models/item-buildings-compress.glb" },
-    szzItems: { url: "./models/item-pics-compress.glb" },
-    szzTexts: { url: "./models/item-texts-compress.glb" },
+    szzItems: { url: "/models/item-pics-compress.glb" },
+    szzTexts: { url: "/models/item-texts-compress.glb" },
+    cloud: { url: "/models/cloud.glb" },
   };
 
   // decompress models.
@@ -785,10 +770,10 @@ function init() {
 
   const gltfLoader = new GLTFLoader(manager);
 
-  gltfLoader.setDRACOLoader(dracoLoader)
+  gltfLoader.setDRACOLoader(dracoLoader);
 
   for (const [key, value] of Object.entries(models)) {
-    gltfLoader.load(value.url, (gltf) => {
+    gltfLoader.load(cdnUrl + value.url, (gltf) => {
       // 这一步是如果有动画的话，可以进一步操作！
       // model.gltf = gltf;
 
@@ -806,28 +791,23 @@ function init() {
 
     // 加载完执行动画！！
 
-    hideWords()
+    hideWords();
 
     animate();
-
   }
 
   // gltf
 
   // building !
-  gltfLoader.load('./models/item-buildings-compress.glb', gltf => {
-
+  gltfLoader.load(cdnUrl + "/models/item-buildings-compress.glb", (gltf) => {
     // just for buildings !!!,don't add to all of them, it's too slow...
     worldOctree.fromGraphNode(gltf.scene);
 
     scene.add(gltf.scene);
-  })
-
-
+  });
 
   // 专门放点的model -> 创建曲线 -> 游览路径！！
-  gltfLoader.load("./models/curves.glb", (gltf) => {
-
+  gltfLoader.load(cdnUrl + "/models/curves.glb", (gltf) => {
     gltf.scene.traverse((item) => {
       if (item.isMesh && item.name.indexOf("Plane") !== -1) {
         // item.material = new THREE.MeshBasicMaterial({
@@ -841,7 +821,6 @@ function init() {
           haltPoints.push(item.position);
         }
       }
-
     });
 
     // console.log(haltPoints);
@@ -862,9 +841,8 @@ function init() {
 
     // tween - 移动！
 
-    gltfLoader.load("./models/tween-points.glb", (gltf) => {
+    gltfLoader.load(cdnUrl + "/models/tween-points.glb", (gltf) => {
       scene.add(gltf.scene);
-
 
       gltf.scene.traverse((item) => {
         if (item.name.endsWith("l")) {
@@ -904,18 +882,14 @@ function init() {
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
 
-
   window.addEventListener("resize", onWindowResize);
 
   // 取消gui
   // initGui();
-
-
 }
 function moveCamera_Tween(index) {
-
   if (state.isMoving) {
-    return
+    return;
   }
 
   const cameraPos = camera.position;
@@ -1013,7 +987,6 @@ function moveCamera(moveDirection) {
 
   updateCamera();
   _time += (moveDirection === "Front" ? 0.01 : -0.01) * 4;
-
 }
 
 function animate() {
