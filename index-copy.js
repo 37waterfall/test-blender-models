@@ -760,9 +760,9 @@ function init() {
   // 加载所有模型 - 材质和模型分离！在加载中上材质！
   const models = {
     // szzBuildings: { url: "./models/item-buildings-compress.glb" },
-    szzItems: { url: "/models/item-pics-compress.glb" },
-    szzTexts: { url: "/models/item-texts-compress.glb" },
-    cloud: { url: "/models/cloud.glb" },
+    szzItems: { url: "./models/item-pics-compress.glb" },
+    szzTexts: { url: "./models/item-texts-compress.glb" },
+    cloud: { url: "./models/cloud.glb" },
   };
 
   // decompress models.
@@ -774,17 +774,19 @@ function init() {
 
   gltfLoader.setDRACOLoader(dracoLoader);
 
-  for (const [key, value] of Object.entries(models)) {
-    gltfLoader.load(value.url, (gltf) => {
-      // 这一步是如果有动画的话，可以进一步操作！
-      // model.gltf = gltf;
+  setTimeout(() => {
+    for (const [key, value] of Object.entries(models)) {
+      gltfLoader.load(value.url, (gltf) => {
+        // 这一步是如果有动画的话，可以进一步操作！
+        // model.gltf = gltf;
 
-      // 物理世界,
-      // worldOctree.fromGraphNode(gltf.scene);
+        // 物理世界,
+        // worldOctree.fromGraphNode(gltf.scene);
 
-      scene.add(gltf.scene);
-    });
-  }
+        scene.add(gltf.scene);
+      });
+    }
+  }, 5000);
 
   function initLoading() {
     // hide the loading bar
@@ -801,7 +803,8 @@ function init() {
   // gltf
 
   // building !
-  gltfLoader.load("/models/item-buildings-compress.glb", (gltf) => {
+
+  gltfLoader.load("./models/item-buildings-compress.glb", (gltf) => {
     // just for buildings !!!,don't add to all of them, it's too slow...
     worldOctree.fromGraphNode(gltf.scene);
 
@@ -809,7 +812,7 @@ function init() {
   });
 
   // 专门放点的model -> 创建曲线 -> 游览路径！！
-  gltfLoader.load("/models/curves.glb", (gltf) => {
+  gltfLoader.load("./models/curves.glb", (gltf) => {
     gltf.scene.traverse((item) => {
       if (item.isMesh && item.name.indexOf("Plane") !== -1) {
         // item.material = new THREE.MeshBasicMaterial({
@@ -842,8 +845,9 @@ function init() {
     scene.add(gltf.scene);
 
     // tween - 移动！
+    // 这里直接改成点，不要调用了。。
 
-    gltfLoader.load("/models/tween-points.glb", (gltf) => {
+    gltfLoader.load("./models/tween-points.glb", (gltf) => {
       scene.add(gltf.scene);
 
       gltf.scene.traverse((item) => {
