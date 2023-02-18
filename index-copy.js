@@ -753,8 +753,10 @@ function init() {
     console.log((itemsLoaded / itemsTotal) * 100, url);
   };
 
-  const cdnUrl =
-    "https://cdn.jsdelivr.net/gh/37waterfall/test-blender-models@master";
+  // 去掉cdn。。。
+
+  // const cdnUrl =
+  //   "https://cdn.jsdelivr.net/gh/37waterfall/test-blender-models@master";
   // 加载所有模型 - 材质和模型分离！在加载中上材质！
   const models = {
     // szzBuildings: { url: "./models/item-buildings-compress.glb" },
@@ -773,7 +775,7 @@ function init() {
   gltfLoader.setDRACOLoader(dracoLoader);
 
   for (const [key, value] of Object.entries(models)) {
-    gltfLoader.load(cdnUrl + value.url, (gltf) => {
+    gltfLoader.load(value.url, (gltf) => {
       // 这一步是如果有动画的话，可以进一步操作！
       // model.gltf = gltf;
 
@@ -799,7 +801,7 @@ function init() {
   // gltf
 
   // building !
-  gltfLoader.load(cdnUrl + "/models/item-buildings-compress.glb", (gltf) => {
+  gltfLoader.load("/models/item-buildings-compress.glb", (gltf) => {
     // just for buildings !!!,don't add to all of them, it's too slow...
     worldOctree.fromGraphNode(gltf.scene);
 
@@ -807,7 +809,7 @@ function init() {
   });
 
   // 专门放点的model -> 创建曲线 -> 游览路径！！
-  gltfLoader.load(cdnUrl + "/models/curves.glb", (gltf) => {
+  gltfLoader.load("/models/curves.glb", (gltf) => {
     gltf.scene.traverse((item) => {
       if (item.isMesh && item.name.indexOf("Plane") !== -1) {
         // item.material = new THREE.MeshBasicMaterial({
@@ -841,7 +843,7 @@ function init() {
 
     // tween - 移动！
 
-    gltfLoader.load(cdnUrl + "/models/tween-points.glb", (gltf) => {
+    gltfLoader.load("/models/tween-points.glb", (gltf) => {
       scene.add(gltf.scene);
 
       gltf.scene.traverse((item) => {
