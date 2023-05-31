@@ -93,20 +93,46 @@ const state = {
   currentMode: "guide", // explorer
 };
 // audio
-let clickAudio = document.querySelector("#clickAudio");
+const clickAudio = document.querySelector("#clickAudio");
 
 // page
 
-let loadingBox = document.querySelector(".loadingBox");
-let homeBox = document.querySelector(".homeBox");
+const loadingBox = document.querySelector(".loadingBox");
+const homeBox = document.querySelector(".homeBox");
 
-let topBox = document.querySelector(".topBox");
-let guideModeBtn = document.querySelector("#guideBtn");
-let explorerBtn = document.querySelector("#explorerBtn");
+const topBox = document.querySelector(".topBox");
+const guideModeBtn = document.querySelector("#guideBtn");
+const explorerBtn = document.querySelector("#explorerBtn");
 
-let bottomBox = document.querySelector(".bottomBox");
+const bottomBox = document.querySelector(".bottomBox");
 
-let preInfoBox = document.querySelector(".preInfoBox");
+const preInfoBox = document.querySelector(".preInfoBox");
+
+// home page info
+const ageInfo = document.querySelector(".age");
+const homeInfo = document.querySelector(".info");
+
+// 标题信息。
+const headerInfo = document.querySelector(".topM");
+
+function handleLanguage() {
+  ageInfo.innerHTML = data[state.language]["interface"].szz_age;
+  homeInfo.innerHTML = data[state.language]["interface"].szz_introduce;
+  enterBtn.innerHTML = data[state.language]["interface"].enterBtnInfo;
+
+  // 底部按钮的中英文
+  bottomItemList.forEach((value, index) => {
+    value.innerHTML = data[state.language]["interface"].bottomInfo[index];
+  });
+
+  // 标题信息和导览按钮的中英文
+  headerInfo.innerHTML = data[state.language]["interface"].headerInfo;
+  guideModeBtn.innerHTML = data[state.language]["interface"].mode_guide;
+  explorerBtn.innerHTML = data[state.language]["interface"].mode_explor;
+
+  // 当前景点的信息的中英文
+  handleWords(haltIndex);
+}
 
 // loading 接入实际数据显示！
 // setTimeout(() => {
@@ -416,6 +442,7 @@ listBtn.addEventListener("click", () => {
 });
 
 //init
+// 选择语言的下拉框。
 var selectHead = document.getElementsByClassName("select-head")[0];
 var selectHeadCont = document.getElementsByClassName("select-head-cont");
 var Option = document.getElementsByClassName("option")[0];
@@ -441,6 +468,15 @@ for (var i = 0; i < len; i++) {
     function () {
       selectHeadCont[0].innerHTML = optionItem[this.index].innerHTML;
       Option.style.display = "none";
+
+      // 切换中英文！
+      if (String(selectHeadCont[0].innerHTML) === "English") {
+        state.language = "en";
+      } else {
+        state.language = "ch";
+      }
+      // 重新写入对应的中英文！
+      handleLanguage();
     },
     false
   );
