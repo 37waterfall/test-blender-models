@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script type="module">
+      import * as THREE from "./libs/three.module.js";
+      import { GLTFLoader } from "./libs/GLTFLoader.js";
+      import { OrbitControls } from "./libs/OrbitControls.js";
+
+      const scene = new THREE.Scene();
+      scene.add(new THREE.GridHelper(10, 10));
+
+      const camera = new THREE.PerspectiveCamera(
+        75,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        1000
+      );
+
+      const renderer = new THREE.WebGLRenderer();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
+
+      const geometry = new THREE.BoxGeometry(1, 1, 1);
+      const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+      const cube = new THREE.Mesh(geometry, material);
+      // scene.add(cube);
+
+      camera.position.z = 5;
+
+      // ------Controls
+
+      const controls = new OrbitControls(camera, renderer.domElement);
+
+      // ------GLTF
+      const loader = new GLTFLoader();
+
+      // Optional: Provide a DRACOLoader instance to decode compressed mesh data
+      // const dracoLoader = new DRACOLoader();
+      // dracoLoader.setDecoderPath("/examples/js/libs/draco/");
+      // loader.setDRACOLoader(dracoLoader);
+
+      // Load a glTF resource
+
+      const group = new THREE.Group();
+      loader.load(
+        // resource URL
+        // "./models/test-curve3.glb",
+        "./models/test-path2.glb",
+        // called when the resource is loaded
+        function (gltf) {
+          gltf.scene.scale.set(0.5, 0.5, 0.5);
+
+          group.add(gltf.scene);
+          // scene.add(group);
+
+          console.log("1111", scene, group);
+
+          let tempPos = null;
+
+          gltf.scene.traverse((item) => {
+            if (item.isMesh && item.name !== "Plane") {
+              item.material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+            }
+
+            if (item.name === "NurbsPath002") {
+              tempPos = item.geometry;
+              item.visible = false;
+            }
+          });
+
+          // float32Array
+          // console.log("tempPos", tempPos.attributes.position.array);
+          // const positionAttribute = new THREE.BufferAttribute(
+          //   tempPos.attributes.position.array,
+          //   3
+          // );
+
+          // const geometry = new THREE.BufferGeometry();
+          // geometry.setAttribute("position", positionAttribute);
+
+          // const mesh = new THREE.Mesh(geometry, material);
+          // scene.add(mesh);
+
+          // -------
+          // const geometry = new THREE.BoxBufferGeometry(1, 1, 1, 4, 4, 4);
+          const geometry = new THREE.BufferGeometry();
+          const count = 50;
+          // const positionsArray = new Float32Array(count * 3 * 3);
+          const positionsArray = tempPos.attributes.position.array;
+
+          console.log(tempPos);
+
+          for (let i = 0; i < count * 3 * 3; i++) {
+            positionsArray[i] = Math.random() - 0.5;
+          }
+
+          const positionsAttribute = new THREE.BufferAttribute(
+            positionsArray,
+            3
+          );
+          geometry.setAttribute("position", positionsAttribute);
+
+          const material = new THREE.MeshBasicMaterial({
+            color: 0xff0000,
+            wireframe: true,
+          });
+          const mesh = new THREE.Mesh(geometry, material);
+          scene.add(mesh);
+
+          console.log("geometry", geometry, scene);
+        },
+        // called while loading is progressing
+        function (xhr) {
+          console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+        },
+        // called when loading has errors
+        function (error) {
+          console.log("An error happened");
+        }
+      );
+
+      // event
+
+      window.onresize = function () {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      };
+
+      function animate() {
+        requestAnimationFrame(animate);
+
+        // cube.rotation.x += 0.01;
+        // cube.rotation.y += 0.01;
+
+        renderer.render(scene, camera);
+      }
+
+      animate();
+    </script>
+  </body>
+</html>

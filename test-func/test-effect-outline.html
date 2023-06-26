@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="WebGL-output">
+      <style>
+        body {
+          margin: 0;
+          overflow: hidden;
+        }
+      </style>
+    </div>
+
+    <script type="module">
+      import * as THREE from "./libs/three.module.js";
+
+      let screenWidth =
+        document.documentElement.clientWidth || document.body.clientWidth;
+      let screenHeight =
+        document.documentElement.clientHeight || document.body.clientHeight;
+
+      //scene
+      let scene = new THREE.Scene();
+
+      //geometry
+      let geometry = new THREE.TorusKnotGeometry(50, 10, 50, 20);
+      //material
+      let matColor = new THREE.MeshPhongMaterial({ color: 0xffffff });
+      let mesh = new THREE.Mesh(geometry, matColor);
+      scene.add(mesh);
+
+      //outlineScene
+      let outlineScene = new THREE.Scene();
+
+      //轮廓着色器
+      //着色器材质
+      const matShader = new THREE.ShaderMaterial({
+        uniforms: {
+          offset: {
+            type: "f", //指定变量类型为float
+            value: 1.0, //偏移值
+          },
+        },
+        vertexShader: [
+          "uniform float offset;",
+          "void main() {",
+          "vec4 pos = modelViewMatrix * vec4( position + normal * offset, 1.0 );",
+          "gl_Position = projectionMatrix * pos;",
+          "}",
+        ].join("\n"),
+        fragmentShader: [
+          "void main(){",
+          "gl_FragColor = vec4( 1.0, 0.0, 0.0, 1.0 );",
+          "}",
+        ].join("\n"),
+      });
+      //outlineMesh
+      let outlineMesh = new THREE.Mesh(geometry, matShader);
+      outlineScene.add(outlineMesh);
+      // mesh.add(outlineMesh);
+
+      const shaderMat2 = new THREE.ShaderMaterial({
+        uniforms: {
+          offset: {
+            type: "f", //指定变量类型为float
+            value: 2.0, //偏移值
+          },
+          color1: {
+            value: new THREE.Color("#58DA94"),
+          },
+          color2: {
+            value: new THREE.Color("#4CC6D6"),
+          },
+        },
+        vertexShader: `
+                uniform float offset;
+                void main() {
+                    vec4 pos = modelViewMatrix * vec4( position + normal * offset, 1.0 );
+                    gl_Position = projectionMatrix * pos;
+                }
+            `,
+        fragmentShader: `
+            	void main(){
+                    gl_FragColor = vec4( 0.10, 0.855, 0.270, 1.0 );
+                    //gl_FragColor = vec4(mix(color1, color2, 0.0), 1);
+                }
+            `,
+        // wireframe: false
+      });
+      const geo2 = new THREE.TorusKnotGeometry(50, 10, 50, 20);
+      const mesh2 = new THREE.Mesh(
+        geo2,
+        new THREE.MeshPhongMaterial({ color: 0xffffff })
+      );
+      scene.add(mesh2);
+      const outlinemesh2 = new THREE.Mesh(geo2, shaderMat2);
+      outlineScene.add(outlinemesh2);
+      mesh2.position.set(100, 100, 0);
+      outlinemesh2.position.set(100, 100, 0);
+
+      //render
+      const renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(screenWidth, screenHeight);
+      renderer.setClearColor(0x666666);
+      //防止渲染器在渲染每一帧之前自动清除其输出
+      renderer.autoClear = false;
+
+      //camera
+      let camera = new THREE.PerspectiveCamera(
+        40,
+        screenWidth / screenHeight,
+        50,
+        10000
+      );
+      camera.position.set(0, 0, 500);
+      scene.add(camera);
+
+      //outlineCamera
+      let outlineCamera = new THREE.PerspectiveCamera(
+        40,
+        screenWidth / screenHeight,
+        50,
+        10000
+      );
+      outlineCamera.position.set(0, 0, 500);
+      outlineScene.add(outlineCamera);
+
+      //DirectionalLight
+      const light = new THREE.DirectionalLight("#ffffff");
+      light.position.set(1, 1, 1);
+      scene.add(light);
+
+      renderer.outputEncoding = THREE.sRGBEncoding;
+      const pmremGenerator = new THREE.PMREMGenerator(renderer);
+
+      //将渲染结果添加到网页的元素中
+      document.getElementById("WebGL-output").appendChild(renderer.domElement);
+      window.addEventListener("resize", onWindowResize, false);
+
+      animate();
+
+      function onWindowResize() {
+        screenWidth = window.innerWidth;
+        screenHeight = window.innerHeight;
+        camera.aspect = screenWidth / screenHeight;
+        outlineCamera.aspect = camera.aspect;
+        camera.updateProjectionMatrix();
+        outlineCamera.updateProjectionMatrix();
+        renderer.setSize(screenWidth, screenHeight);
+      }
+
+      function animate() {
+        requestAnimationFrame(animate);
+        render();
+      }
+      function render() {
+        //旋转动画
+        if (mesh) {
+          mesh.rotation.y += 0.01;
+          outlineMesh.rotation.y = mesh.rotation.y;
+        }
+        outlineCamera.copy(camera);
+        //清除上一帧画面
+        renderer.clear();
+        //渲染轮廓场景
+        renderer.render(outlineScene, outlineCamera);
+        //清楚深度缓冲
+        renderer.clearDepth();
+        //渲染物体场景
+        renderer.render(scene, camera);
+      }
+    </script>
+  </body>
+</html>

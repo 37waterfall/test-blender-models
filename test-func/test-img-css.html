@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+
+    <style>
+      .img-wrap {
+        width: 100vw;
+        height: 100vh;
+        margin: auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #000;
+      }
+      /* .img-preview {
+        position: absolute;
+      } */
+      .mask {
+        position: absolute;
+        width: 180px;
+        height: 180px;
+        /* border-radius: 50%; */
+        z-index: 1;
+        border: 3px solid white;
+        box-shadow: 0 0 0 2000px rgba(0, 0, 0, 1);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="img-wrap">
+      <iframe
+        src="http://ljy336606.top/test-blender-models/"
+        frameborder="0"
+        width="100%"
+        height="100%"
+      ></iframe>
+      <!-- <img
+        class="img-preview"
+        src="https://images.unsplash.com/photo-1660816610637-14a1a8be79e1?crop=entropy&cs=tinysrgb&fm=jpg&ixid=MnwzMjM4NDZ8MHwxfHJhbmRvbXx8fHx8fHx8fDE2NjM1NzM1NTE&ixlib=rb-1.2.1&q=80"
+        alt=""
+      /> -->
+      <div class="mask"></div>
+    </div>
+  </body>
+</html>
