@@ -19,6 +19,7 @@ const data = {
         "赛珍珠纪念馆",
         "大地翰墨画室",
       ],
+      readMoreInfo: "阅读更多",
     },
     // 广场 - 5
     gc_body: {
@@ -271,6 +272,7 @@ const data = {
         "Pearl S. Buck Memorial Hall",
         "Dadi Hanmo Painting Studio",
       ],
+      readMoreInfo: "Read More!",
     },
     // 广场 - 5
     gc_body: {

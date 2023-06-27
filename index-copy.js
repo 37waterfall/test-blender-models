@@ -76,7 +76,14 @@ const wordsArray = [
 ];
 
 // 打表法 - 记录_time，用于跳转事件。。只需要5个。。
-// const pos_time = []
+// 参数：【当前位置，信息下标】
+const pos_time = [
+  { cur_Time: 0.519999, cur_HaltIndex: 0 }, // 广场综述
+  { cur_Time: 14.55999, cur_HaltIndex: 1 }, // 广场景观
+  { cur_Time: 94.4, cur_HaltIndex: 6 }, // 赛珍珠故居
+  { cur_Time: 122.48, cur_HaltIndex: 9 }, // 赛珍珠纪念馆
+  { cur_Time: 73.68, cur_HaltIndex: 5 }, // 大地翰墨画室
+];
 
 let _time = 0;
 
@@ -132,6 +139,9 @@ function handleLanguage() {
 
   // 当前景点的信息的中英文
   handleWords(haltIndex);
+
+  // 阅读更多的中英文
+  detailBox.innerHTML = data[state.language]["interface"].readMoreInfo;
 }
 
 // loading 接入实际数据显示！
@@ -351,24 +361,65 @@ bottomListBtn.addEventListener("click", (e) => {
   e.target.classList.add("active");
 
   // 用tweenjs 移动 + setPlayerColliderPos。
+  // moveCamera_Tween参数：【模型数组的下标， 当前位置的下标（底部按钮点击）】
   switch (e.target.dataset.index) {
     case "0":
-      moveCamera_Tween(4); // 公园综述。
+      moveCamera_Tween(4, 0); // 公园综述。
       break;
     case "1":
-      moveCamera_Tween(3); // 赛珍珠雕像。
+      moveCamera_Tween(3, 1); // 赛珍珠雕像。
       break;
     case "2":
-      moveCamera_Tween(1); // 故居。
+      moveCamera_Tween(1, 2); // 故居。
       break;
     case "3":
-      moveCamera_Tween(2); // 纪念馆。
+      moveCamera_Tween(2, 3); // 纪念馆。
       break;
     case "4":
-      moveCamera_Tween(0); // 大地翰墨
+      moveCamera_Tween(0, 4); // 大地翰墨
       break;
   }
 });
+
+// 点击左右箭头的时候，底部信息的位置变换！（是否移动到了当前位置！）
+function isCurPos(direction) {
+  // 如果当前haltIndex，在此范围内，显示对应的高亮！
+  const curPosRange = [
+    [0],
+    [1, 2, 3, 4],
+    [6, 7, 8],
+    [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
+    [5],
+  ];
+
+  // 遍历，然后对应的下标，高亮！
+  let i = 0;
+  for (; i < curPosRange.length; i++) {
+    for (let item of curPosRange[i]) {
+      if (direction === "-") {
+        if ((haltIndex - 1) % 23 === item) {
+          // console.log("curPos: i=", i);
+
+          // 处理高亮
+          bottomItemList.forEach((item) => {
+            item.classList.remove("active");
+          });
+          bottomItemList[i].classList.add("active");
+        }
+      } else {
+        if ((haltIndex + 1) % 23 === item) {
+          // console.log("curPos: i=", i);
+
+          // 处理高亮
+          bottomItemList.forEach((item) => {
+            item.classList.remove("active");
+          });
+          bottomItemList[i].classList.add("active");
+        }
+      }
+    }
+  }
+}
 
 leftBtn.addEventListener("click", () => {
   if (state.isMoving) {
@@ -379,6 +430,9 @@ leftBtn.addEventListener("click", () => {
   if (haltIndex === 0) {
     return;
   }
+
+  // 用于底部按钮的高亮判断
+  isCurPos("-");
 
   state.isMoving = true;
   haltIndex--;
@@ -394,6 +448,9 @@ rightBtn.addEventListener("click", () => {
   if (state.isMoving) {
     return;
   }
+
+  // 用于底部按钮的高亮判断
+  isCurPos("+");
 
   state.isMoving = true;
 
@@ -515,6 +572,7 @@ const preHeader = document.querySelector(".preInfoBox .title");
 // 展示页从右侧出来，和选择语言的一样的位置，也要隐藏按钮
 const readMoreBtn = document.querySelector("#readMoreBtn");
 const detailInfoBox = document.querySelector(".detailInfoBox");
+const detailBox = document.querySelector("#detailBox");
 const detailCloseBtn = document.querySelector(".detailCloseBtn");
 
 const detailHeader = document.querySelector(".detailInfoBox .title");
@@ -929,10 +987,20 @@ function init() {
   // 取消gui
   // initGui();
 }
-function moveCamera_Tween(index) {
+function moveCamera_Tween(index, curIndex) {
   if (state.isMoving) {
     return;
   }
+
+  // 修改_time的值！
+  _time = pos_time[curIndex].cur_Time;
+  // 修改haltIndex的值 - 停止！
+  haltIndex = pos_time[curIndex].cur_HaltIndex;
+
+  // 修改当前位置的标题信息！
+  // 显示文字 + 文字内容（根据halIndex判断。一个字符串数组，从对象中获取！。）！
+  handleWords(haltIndex);
+  showWords();
 
   const cameraPos = camera.position;
 
@@ -1007,7 +1075,7 @@ function updateCamera() {
     // 设置探索模式的位置！
     setPlayerColliderPos();
 
-    console.log(_time, wordsArray[haltIndex]);
+    // console.log(_time, wordsArray[haltIndex]);
   }
 
   camera.position.copy(pos);
