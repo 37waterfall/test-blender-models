@@ -529,8 +529,12 @@ for (var i = 0; i < len; i++) {
       // 切换中英文！
       if (String(selectHeadCont[0].innerHTML) === "English") {
         state.language = "en";
+        // 阅读更多的中英文
+        detailBox.innerHTML = data[state.language]["interface"].readMoreInfo;
       } else {
         state.language = "ch";
+        // 阅读更多的中英文
+        detailBox.innerHTML = data[state.language]["interface"].readMoreInfo;
       }
       // 重新写入对应的中英文！
       handleLanguage();
@@ -620,7 +624,15 @@ function handleWords(haltIndex) {
 const audioBtn = document.querySelector("#audioBtn");
 const contentAudio = document.querySelector("#contentAudio");
 audioBtn.addEventListener("click", (e) => {
-  const temp = e.target.dataset.currentinfo;
+  // const temp = e.target.dataset.currentinfo;
+
+  let temp = "";
+  if (state.language === "ch") {
+    temp = e.target.dataset.currentinfo;
+  } else {
+    temp = "en_" + e.target.dataset.currentinfo;
+  }
+
   contentAudio.src = `./audio/${temp}.mp3`;
   contentAudio.play();
 });

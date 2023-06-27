@@ -412,7 +412,7 @@ const data = {
     jng_szzjzxqpxb: {
       header: "Pearl S. Buck Family Genealogy Chart",
       info: `
-      In 1921, Pearl S. Buck's mother died in Zhenjiang. In 1921, Pearl S. Buck's mother died in Zhenjiang. Pearl S. Buck, who was teaching in Nanjing, rushed back to Zhenjiang, and buried her mother in the West Overseas Chinese Cemetery near the kraft slope at the foot of Yuntai Mountain. So far, Pearl S. Buck has five relatives sleeping in Zhenjiang land: mother Kaili, two sisters, a brother, a brother.
+       In 1921, Pearl S. Buck's mother died in Zhenjiang. Pearl S. Buck, who was teaching in Nanjing, rushed back to Zhenjiang, and buried her mother in the West Overseas Chinese Cemetery near the kraft slope at the foot of Yuntai Mountain. So far, Pearl S. Buck has five relatives sleeping in Zhenjiang land: mother Kaili, two sisters, a brother, a brother.
       `,
       audioPath: "",
       imgPath: "",
